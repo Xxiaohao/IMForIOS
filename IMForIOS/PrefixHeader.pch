@@ -1,0 +1,42 @@
+//
+//  PrefixHeader.pch
+//  IMForIOS
+//
+//  Created by LC on 15/9/17.
+//  Copyright (c) 2015年 XH. All rights reserved.
+//
+
+#ifndef IMForIOS_PrefixHeader_pch
+#define IMForIOS_PrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+// RGB颜色
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
+#define XHColor(r, g, b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1.0]
+
+// 随机色
+#define XHRandomColor XHColor(arc4random_uniform(256), arc4random_uniform(256), arc4random_uniform(256))
+//自己设定
+#define HOST @"10.10.26.211"
+#define PORT 9897
+//设置连接超时
+#define TIME_OUT 20
+
+// 自定义Log
+#ifdef DEBUG
+
+#define XHLog(...) NSLog(@"%s %d \n %@\n\n",__func__,__LINE__,[NSString stringWithFormat:__VA_ARGS__])
+
+#else
+#define XHLog(...)
+
+#endif
+
+
+#endif
+
+
+
