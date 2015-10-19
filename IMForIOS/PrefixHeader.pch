@@ -25,6 +25,12 @@
 //设置连接超时
 #define TIME_OUT 20
 
+#define READ_TIME_OUT 20
+//设置写入超时 -1 表示不会使用超时
+#define WRITE_TIME_OUT 20
+#define MAX_BUFFER 1024
+#define LOGIN_SECCUSS 4
+
 // 自定义Log
 #ifdef DEBUG
 

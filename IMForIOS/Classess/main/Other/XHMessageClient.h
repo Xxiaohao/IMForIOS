@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "AsyncSocket.h"
+#import "XHMessageViewController.h"
 
 
 enum{
@@ -15,13 +16,20 @@ enum{
     SocketOfflineByUser,        //用户断开
     SocketOfflineByWifiCut,     //wifi 断开
 };
+@protocol MessageViewDelegate <NSObject>
+
+-(void)showMessageView:(NSDictionary *)dict;
+
+@end
 
 @interface XHMessageClient : NSObject<AsyncSocketDelegate>
 
 @property (nonatomic,strong) AsyncSocket *socket;
 @property (nonatomic,retain) NSTimer *heartTimer;
 @property (nonatomic,strong) NSMutableData *allData;
-//@property (nonatomic,strong)NSArray *friends;
+
+@property (nonatomic,assign)id<MessageViewDelegate> messageViewDelegate;
+
 
 +(XHMessageClient *)shareMessageClient;
 

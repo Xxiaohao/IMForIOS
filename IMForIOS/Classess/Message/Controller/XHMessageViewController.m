@@ -9,8 +9,10 @@
 
 #import "XHMessageViewController.h"
 #import "XHMessageListController.h"
+#import "XHMessageViewTableCell.h"
+#import "XHMessageClient.h"
 
-@interface XHMessageViewController ()
+@interface XHMessageViewController ()<MessageViewDelegate>
 @property (nonatomic,strong)XHMessageListController *messageListControler;
 @end
 
@@ -38,21 +40,25 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [[UITableViewCell alloc]init];
+    
+    UITableViewCell *cell = [XHMessageViewTableCell messageViewCellWithTableView:tableView];
+    
     return cell;
 }
 
 #pragma mark - Table view delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-//    self.messageListControler = [[[NSBundle mainBundle]loadNibNamed:@"XHMessageListController" owner:nil options:nil] firstObject];
-    
-    self.hidesBottomBarWhenPushed=YES;
     self.messageListControler = [[XHMessageListController alloc]init];
     
     [self.navigationController pushViewController:self.messageListControler animated:YES];
+    
 }
 
+#pragma mark - MessageViewDelegate
+-(void)showMessageView:(NSDictionary *)dict{
+    self.messageListControler.messageFrames = dict[@"offLineMessage"];
 
+}
 
 
 

@@ -8,9 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+
+
 @interface XHTabViewController : UITabBarController
 
 @property (nonatomic,strong)NSArray *contacts;
 @property (nonatomic,strong)NSArray *groupInfos;
+
+
 
 @end

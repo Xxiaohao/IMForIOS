@@ -7,30 +7,16 @@
 //
 
 #import "XHAsyncSocketClient.h"
-#import "XHTabViewController.h"
-#import "XHContactViewController.h"
-#import "XHContactTableController.h"
-//#import "XHContactModel.h"
 
-#define READ_TIME_OUT 20
-//设置写入超时 -1 表示不会使用超时
-#define WRITE_TIME_OUT 20
-#define MAX_BUFFER 1024
-#define LOGIN_SECCUSS 4
-
-
-@interface XHAsyncSocketClient()
-@property (nonatomic,strong)XHTabViewController *tabViewController;
-//@property (nonatomic,strong)XHContactViewController *contactViewController;
-//@property (nonatomic,strong)XHContactTableController *contactTableController;
+@interface XHAsyncSocketClient(){
+    SessionServerBlock _resultSessionServerBolck;
+}
 
 @end
 
 @implementation XHAsyncSocketClient
 
 static XHAsyncSocketClient *socketClient=nil;
-
-
 
 +(XHAsyncSocketClient *)shareSocketClient{
     @synchronized(self){
@@ -65,8 +51,6 @@ static XHAsyncSocketClient *socketClient=nil;
     }
     
 }
-
-
 
 - (NSInteger)SocketOpen:(NSString*)addr port:(NSInteger)port
 {
@@ -138,15 +122,6 @@ static XHAsyncSocketClient *socketClient=nil;
 }
 
 
-- (void)sendMessage:(id)message
-{
-    //像服务器发送数据
-//    NSData *cmdData = [message dataUsingEncoding:NSUTF8StringEncoding];
-    NSData *cmdData = [self prepareSendingData];
-    [self.socket writeData:cmdData withTimeout:WRITE_TIME_OUT tag:1];
-}
-
-
 //发送消息成功之后回调
 - (void)onSocket:(AsyncSocket *)sock didWriteDataWithTag:(long)tag
 {
@@ -160,31 +135,22 @@ static XHAsyncSocketClient *socketClient=nil;
 - (void)onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
     //服务端返回消息数据量比较大时，可能分多次返回。所以在读取消息的时候，设置MAX_BUFFER表示每次最多读取多少，当data.length < MAX_BUFFER我们认为有可能是接受完一个完整的消息，然后才解析
-    //    if( data.length < MAX_BUFFER )
-    //    {
-//    [sock read]
-//    NSLog(@"----------------开始进行接收数据解析---%ld--------",self.allData.length);
+//当length>8的时候  我们认为可能有一条完整的消息过来了
     if (self.allData.length >8) {
         [self handleBufferData];
     }
     [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
-//    NSLog(@"---self.alldata2-%ld--",self.allData.length);
-//    NSData *headData = [self.allData subdataWithRange:NSMakeRange(0, 4)];
-//    int dataNetLength;
-    //    memcpy(&dataNetLength, [headData bytes], sizeof(int));
-    //    int dataLocalLenght = ntohl(dataNetLength);
-    //        NSLog(@"----dic-----%@",dic);
     //解析出来的消息，可以通过通知、代理、block等传出去
-    //    }
-//        [self.socket readDataWithTimeout:-1 tag:0];
 }
 
 -(void)handleBufferData{
+    //这个data是一个int数据，存放的是java服务端netty发送过来的数据的长度
     NSData *contentData = [self.allData subdataWithRange:NSMakeRange(4, 4)];
     NSInteger contentDataNetLength;
     memcpy(&contentDataNetLength, [contentData bytes], sizeof(int));
     NSInteger contentDataLocalLength = ntohl(contentDataNetLength);
 //    NSLog(@"--self.allData.length is -2--%ld--contentDataLength-%ld-",self.allData.length,contentDataLocalLength);
+    //如果data的长度大于发送过来的长度contentDataNetLength+8，证明data中包含了发送过来的一整条消息
     if(self.allData.length>=(contentDataLocalLength+8)){
         NSRange readRange = NSMakeRange(8, contentDataLocalLength);
         NSData *contentData = [self.allData subdataWithRange:readRange];
@@ -192,22 +158,14 @@ static XHAsyncSocketClient *socketClient=nil;
         
         NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:contentData options:NSJSONReadingMutableLeaves error:nil];
         [self handleDataWithDict:dic];
-//        NSString *commandContent= [dic objectForKey:@"commandContent"];
-//        NSString *commandID = [dic objectForKey:@"commandID"];
-//        NSString *commandResult = [dic objectForKey:@"commandResult"];
-        
-//        NSDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:[commandContent dataUsingEncoding:NSUTF8StringEncoding ] options:NSJSONReadingMutableLeaves error:nil];
-//        
-//        NSLog(@"--comandID:%@----commandResult:%@--commandContent-%@---",commandID,commandResult,contentDic);
-//        
+        //将已经操作过的数据移除
         [self.allData replaceBytesInRange:NSMakeRange(0, contentDataLocalLength+8) withBytes:nil length:0];
+        //如果data读取过后，数据长度仍然大于8，则有可能data中还包含了一条消息
         if (self.allData.length>8) {
             [self handleBufferData];
-//            NSLog(<#NSString *format, ...#>)
         }
     }
 }
-
 
 #pragma mark 消息处理
 -(void)handleDataWithDict:(NSDictionary *)dic{
@@ -221,29 +179,21 @@ static XHAsyncSocketClient *socketClient=nil;
         case 0:
         {
             if ([commandResult intValue]==LOGIN_SECCUSS) {
-                XHLog(@"--登录成功----");
-                self.tabViewController = [[XHTabViewController alloc]init];
-                UIWindow *window = [[UIApplication sharedApplication]keyWindow];
-                window.rootViewController = self.tabViewController;
+                XHLog(@"--登录成功--%@--",[NSThread currentThread]);
+                _resultSessionServerBolck(LOGIN_SECCUSS,contentDic);
             }else if ([commandResult intValue]==8) {
-               
-                self.tabViewController.contacts = contentDic[@"friendList"];
+//                [self.sessionServerDelegate showFriendsWithDict:contentDic];
+                _resultSessionServerBolck(8,contentDic);
             }else if([commandResult intValue] == 9){
-                
-                XHLog(@"--contentDic 9-%@-",contentDic);
-                self.tabViewController.groupInfos = contentDic[@"groupInfoList"];
+                _resultSessionServerBolck(9,contentDic);
+                [self.sessionServerDelegate searchContacts:contentDic];
             }
         }
-            break;
-            
-        default:
             break;
     }
     
 }
-
-
-
+#pragma mark 将要断开
 - (void)onSocket:(AsyncSocket *)sock willDisconnectWithError:(NSError *)err
 {
     NSData * unreadData = [sock unreadData]; // ** This gets the current buffer
@@ -256,6 +206,28 @@ static XHAsyncSocketClient *socketClient=nil;
             self.socket.userData = SocketOfflineByWifiCut;
         }
     }
+}
+
+-(void)loginWithBlock:(SessionServerBlock)returnBlock{
+    //网络连接
+//        self.socketClient = [XHAsyncSocketClient shareSocketClient ];
+        //socket连接前先断开连接以免之前socket连接没有断开导致闪退
+        [self cutOffSocket];
+        self.socket.userData = SocketOfflineByServer;
+        [self startConnectSocket];
+        self.allData = [[NSMutableData alloc]init];
+    if (!_resultSessionServerBolck) {
+        _resultSessionServerBolck = returnBlock;
+    }
+    [self sendMessage:nil];
+}
+
+- (void)sendMessage:(id)message
+{
+    //像服务器发送数据
+    //    NSData *cmdData = [message dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *cmdData = [self prepareSendingData];
+    [self.socket writeData:cmdData withTimeout:WRITE_TIME_OUT tag:1];
 }
 
 - (NSMutableData *) prepareSendingData{

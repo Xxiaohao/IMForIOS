@@ -120,6 +120,37 @@
             </objects>
             <point key="canvasLocation" x="-1733" y="-635"/>
         </scene>
+        <!--Test View Controller-->
+        <scene sceneID="ZTO-aT-g31">
+            <objects>
+                <viewController id="iEM-eJ-s3W" customClass="XHTestViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="R6x-5o-SlS"/>
+                        <viewControllerLayoutGuide type="bottom" id="PGe-qy-ODY"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="hYk-ph-Lkc">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rxQ-FL-FQg" userLabel="imageView">
+                                <rect key="frame" x="85" y="85" width="150" height="150"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="chat_bottom_smile_nor" translatesAutoresizingMaskIntoConstraints="NO" id="OWY-cE-hD5">
+                                        <rect key="frame" x="-3" y="-6" width="150" height="150"/>
+                                    </imageView>
+                                </subviews>
+                            </scrollView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="imageVIew" destination="rxQ-FL-FQg" id="1km-38-Q5U"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hWv-Vh-G6B" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2092" y="-1119"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="Cbm-1O-0hN">
             <objects>
@@ -138,6 +169,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="chat_bottom_smile_nor" width="34" height="34"/>
         <image name="password_icon" width="33" height="33"/>
         <image name="textfield_activated_holo_light.9" width="38" height="64"/>
         <image name="textfield_default_holo_light.9" width="38" height="64"/>

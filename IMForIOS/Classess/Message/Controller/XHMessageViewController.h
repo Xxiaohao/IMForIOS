@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+
+
 @interface XHMessageViewController : UITableViewController
+
+@property (nonatomic,strong)NSDictionary *messagesDictionary;//key:用户账号 value：MutableArray  转载该用户发送过来的消息
+
 
 @end

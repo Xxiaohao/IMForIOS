@@ -17,38 +17,47 @@
 @property (weak, nonatomic) IBOutlet UIButton *emotion;
 @property (weak, nonatomic) IBOutlet UIButton *other_features;
 @property (weak, nonatomic) IBOutlet UITableView *msgTableView;
-@property (nonatomic,strong) NSMutableArray *messageFrames;
 
 
 @end
 
 @implementation XHMessageListController
 
-- (NSMutableArray *)messageFrames
-{
-    if (_messageFrames == nil) {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"messages.plist" ofType:nil];
-        NSArray *arrayDict = [NSArray arrayWithContentsOfFile:path];
-        
-        NSMutableArray *arrayModels = [NSMutableArray array];
-        for (NSDictionary *dict in arrayDict) {
-            // 创建一个数据模型
-            XHChatBean *chatModel = [XHChatBean chatWithDict:dict];
-            // 获取上一个数据模型
-//            XHChatBean *lastMessage = (XHChatBean *)[[arrayModels lastObject] message];
-            // 判断当前模型的“消息发送时间”是否和上一个模型的“消息发送时间”一致， 如果一致做个标记
-            //            if ([model.time isEqualToString:lastMessage.time]) {
-            //                model.hideTime = YES;
-            //            }
-            // 创建一个frame 模型
-            XHMessageFrame *modelFrame = [[XHMessageFrame alloc]init];
-            modelFrame.chatBean = chatModel;
-            // 把frame 模型加到arrayModels
-            [arrayModels addObject:modelFrame];
-        }
-        _messageFrames = arrayModels;
+//- (NSMutableArray *)messageFrames
+//{
+//    if (_messageFrames == nil) {
+//        NSString *path = [[NSBundle mainBundle] pathForResource:@"messages.plist" ofType:nil];
+//        NSArray *arrayDict = [NSArray arrayWithContentsOfFile:path];
+//        
+//        NSMutableArray *arrayModels = [NSMutableArray array];
+//        for (NSDictionary *dict in arrayDict) {
+//            // 创建一个数据模型
+//            XHChatBean *chatModel = [XHChatBean chatWithDict:dict];
+//            // 获取上一个数据模型
+////            XHChatBean *lastMessage = (XHChatBean *)[[arrayModels lastObject] message];
+//            // 判断当前模型的“消息发送时间”是否和上一个模型的“消息发送时间”一致， 如果一致做个标记
+//            //            if ([model.time isEqualToString:lastMessage.time]) {
+//            //                model.hideTime = YES;
+//            //            }
+//            // 创建一个frame 模型
+//            XHMessageFrame *modelFrame = [[XHMessageFrame alloc]init];
+//            modelFrame.chatBean = chatModel;
+//            // 把frame 模型加到arrayModels
+//            [arrayModels addObject:modelFrame];
+//        }
+//        _messageFrames = arrayModels;
+//    }
+//    return _messageFrames;
+//}
+
+-(void)setMessageFrames:(NSMutableArray *)messageFrames{
+    for (NSDictionary *dict in messageFrames) {
+        XHChatBean *chatModel = [XHChatBean chatWithDict:dict];
+        XHMessageFrame *modelFrame = [[XHMessageFrame alloc]init];
+        modelFrame.chatBean = chatModel;
+        // 把frame 模型加到arrayModels
+        [_messageFrames addObject:modelFrame];
     }
-    return _messageFrames;
 }
 
 
@@ -63,6 +72,12 @@
     // 设置UITableView的行不允许被选中
     self.msgTableView.allowsSelection = NO;
     
+    //设置msgTableView顶部和navigativeBar的底部相连
+    CGRect navigativeBarFrame = self.navigationController.navigationBar.frame;
+//    CGPoint offsetPoint =CGPointMake(0, -navigativeBarFrame.size.height-navigativeBarFrame.origin.y);
+    XHLog(@"---------%@", NSStringFromCGRect(self.navigationController.navigationBar.frame ));
+//    self.msgTableView.contentOffset = offsetPoint;
+    self.msgTableView.contentInset = UIEdgeInsetsMake(navigativeBarFrame.size.height+navigativeBarFrame.origin.y, 0, 0, 0);
     // 设置文本框最左侧有一段间距
     UIView *leftVw = [[UIView alloc] init];
     leftVw.frame = CGRectMake(0, 0, 5, 1);
@@ -93,8 +108,8 @@
     [self.msgTableView reloadData];
     
     // 把最后一行滚动到最上面
-//    NSIndexPath *idxPath = [NSIndexPath indexPathForRow:self.messageFrames.count - 1 inSection:0];
-//    [self.msgTableView scrollToRowAtIndexPath:idxPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    NSIndexPath *idxPath = [NSIndexPath indexPathForRow:self.messageFrames.count - 1 inSection:0];
+    [self.msgTableView scrollToRowAtIndexPath:idxPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
     
     return YES;
 }
@@ -114,16 +129,16 @@
     // 1. 如果是键盘弹出事件, 那么计算出的值就是负的键盘的高度
     // 2. 如果是键盘的隐藏事件, 那么计算出的值就是零， 因为键盘在隐藏以后, 键盘的Y值就等于屏幕的高度。
     CGFloat tranformValue = keyboardY - self.view.frame.size.height;
-    XHLog(@"----tranformValue-%f-%f-",tranformValue,keyboardY);
+
     [UIView animateWithDuration:5 animations:^{
         // 让控制器的View执行一次“平移”
         self.view.transform = CGAffineTransformMakeTranslation(0, tranformValue);
-        XHLog(@"---self.view.transform--%@--1-%@-",NSStringFromCGRect([[self.inputText superview]superview].frame),NSStringFromCGRect(self.view.frame));
+
     }];
-    XHLog(@"---self.view.transform----2-%@-",NSStringFromCGRect(self.view.frame));
+
     // 让UITableView的最后一行滚动到最上面
-//    NSIndexPath *lastRowIdxPath = [NSIndexPath indexPathForRow:self.messageFrames.count - 1 inSection:0];
-//    [self.msgTableView scrollToRowAtIndexPath:lastRowIdxPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    NSIndexPath *lastRowIdxPath = [NSIndexPath indexPathForRow:self.messageFrames.count - 1 inSection:0];
+    [self.msgTableView scrollToRowAtIndexPath:lastRowIdxPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
 - (void)dealloc
@@ -142,13 +157,15 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 20;
+    NSLog(@"----count----%ld",self.messageFrames.count);
+    return self.messageFrames.count;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    
+    XHMessageFrame *messageFrame = self.messageFrames[indexPath.row];
     XHMessageCell *chatBeanCell = [XHMessageCell messageCellWithTableView:tableView];
-    chatBeanCell.textLabel.text=[NSString stringWithFormat:@"%ld",indexPath.row]  ;
+    chatBeanCell.messageFrame = messageFrame;
+    //    chatBeanCell.textLabel.text=[NSString stringWithFormat:@"%ld",indexPath.row]  ;
     return chatBeanCell;
 }
 
@@ -157,6 +174,12 @@
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     [self.view endEditing:YES];
 }
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    XHMessageFrame *messageFrame  = self.messageFrames[indexPath.row];
+    return messageFrame.rowHeight;
+}
+
 
 // ******** 注意: 监听通知以后一定要在监听通知的对象的dealloc方法中移除监听 **********/.
 

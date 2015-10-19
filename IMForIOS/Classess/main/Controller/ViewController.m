@@ -10,11 +10,12 @@
 #import "XHTabViewController.h"
 #import "XHAsyncSocketClient.h"
 
-@interface ViewController ()<UITextFieldDelegate>
+@interface ViewController ()<UITextFieldDelegate,SessionServerDelegate>{
+    
+}
 @property (weak, nonatomic) IBOutlet UITextField *pw_word;
 @property (weak, nonatomic) IBOutlet UITextField *user_field;
 @property (weak, nonatomic) IBOutlet UIButton *login_button;
-@property (strong,nonatomic) XHAsyncSocketClient *socketClient;
 @property (nonatomic,strong) XHTabViewController *tabViewController;
 
 #pragma mark block
@@ -30,33 +31,22 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //网络连接
-    self.socketClient = [XHAsyncSocketClient shareSocketClient ];
-    //socket连接前先断开连接以免之前socket连接没有断开导致闪退
-    [self.socketClient cutOffSocket];
-    self.socketClient.socket.userData = SocketOfflineByServer;
-    [self.socketClient startConnectSocket];
     NSLog(@"viewController load");
-    self.socketClient.allData = [[NSMutableData alloc]init];
-    
+    [XHAsyncSocketClient shareSocketClient].sessionServerDelegate = self;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kbFrameWillChange:) name:UIKeyboardWillChangeFrameNotification object:nil];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
 -(void)kbFrameWillChange:(NSNotification *)noti{
     // 获取窗口的高度
-   
     CGFloat windowH = [UIScreen mainScreen].bounds.size.height;
-
-    
-    
     // 键盘结束的Frm
     CGRect kbEndFrm = [noti.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     // 获取键盘结束的y值
     CGFloat kbEndY = kbEndFrm.origin.y;
     
     NSLog(@"---%@--%fd-",noti.userInfo,kbEndY);
-//    self.inputViewConstraint.constant = windowH - kbEndY;
+    //    self.inputViewConstraint.constant = windowH - kbEndY;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -64,22 +54,52 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark 点击登录
 - (IBAction)loginClick {
     NSString *user = self.user_field.text;
     NSString *pw = self.pw_word.text;
     
-    [self.socketClient sendMessage:nil];
+    XHAsyncSocketClient *sessionClient = [XHAsyncSocketClient shareSocketClient];
     
-//    self.tabViewController = [[XHTabViewController alloc]init];
-//    
-//    [self presentViewController:self.tabViewController animated:YES completion:^{
-//    }];
-    
-//    [self performSegueWithIdentifier:@"login" sender:self];
+    [sessionClient loginWithBlock:^(int result,NSDictionary *dict) {
+        [self handleResult:result AndContentDict:dict];
+    }];
     NSLog(@"-----%@-------%@----",user,pw);
 }
 
+-(void)handleResult:(int)result AndContentDict:(NSDictionary *)dict{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        switch (result) {
+            case LOGIN_SECCUSS:
+            {
+                [self dismissViewControllerAnimated:YES completion:nil];
+                self.tabViewController =[[XHTabViewController alloc]init];
+                self.view.window.rootViewController = self.tabViewController;
+            }
+                break;
+            case 8:
+                self.tabViewController.contacts = dict[@"friendList"];
+                break;
+            case 9:
+                self.tabViewController.groupInfos = dict[@"groupInfoList"];
+                break;
+        }
+    });
+}
 
+
+-(void)dealloc{
+    NSLog(@"----%s---",__func__);
+}
+
+#pragma mark SessionServerDelegate
+-(void)showFriendsWithDict:(NSDictionary *)dict{
+    XHLog(@"--dict.count-----%@--------",dict);
+}
+
+-(void)searchContacts:(NSDictionary *)dict{
+    
+}
 
 #pragma mark textField 代理
 -(void)textFieldDidBeginEditing:(UITextField *)textField{

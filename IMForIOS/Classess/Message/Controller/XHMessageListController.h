@@ -10,4 +10,6 @@
 
 @interface XHMessageListController : UIViewController
 
+@property (nonatomic,strong) NSMutableArray *messageFrames;
+
 @end
