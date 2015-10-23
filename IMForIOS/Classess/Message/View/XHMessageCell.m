@@ -9,6 +9,7 @@
 #import "XHMessageCell.h"
 #import "XHChatBean.h"
 #import "XHMessageFrame.h"
+#import "XHUserInfo.h"
 
 @interface XHMessageCell ()
 
@@ -80,16 +81,15 @@
     // 分别设置每个子控件的数据 和 frame
     
     // 设置 "时间Label"的数据 和 frame
-    self.lblTime.text = chatBean.time;
+    self.lblTime.text = [chatBean.time substringToIndex:19];
     self.lblTime.frame = messageFrame.timeFrame;
 //    self.lblTime.hidden = chatBean.hideTime;
     
     
     
     // 设置 头像
-    // 根据消息类型, 判断应该使用哪张图片
-    NSString *iconImg = [chatBean.userID isEqualToString:chatBean.senderID ] ? @"me" : @"other";
-    self.imgViewIcon.image = [UIImage imageNamed:iconImg];
+    self.imgViewIcon.image = [UIImage imageNamed:messageFrame.chatBean.headImg];
+    XHLog(@"headimg is %@",messageFrame.chatBean.headImg);
     self.imgViewIcon.frame = messageFrame.iconFrame;
     
     
@@ -100,7 +100,7 @@
     
     // 设置正文的背景图
     NSString *imgNor, *imgHighlighted;
-    if ([chatBean.userID isEqualToString:chatBean.senderID ]) {
+    if ([[XHUserInfo sharedXHUserInfo].userID isEqualToString:chatBean.senderID ]) {
         // 自己发的消息
         imgNor = @"chat_send_nor";
         imgHighlighted = @"chat_send_press_pic";

@@ -12,12 +12,12 @@
 
 -(instancetype)initWithDict:(NSDictionary *)dict{
     if (self = [super init]) {
-        XHLog(@"---arc4random%d---",arc4random_uniform(2)) ;
-        self.userID = [NSString stringWithFormat:@"%d",arc4random_uniform(2)];
-        self.senderID = [NSString stringWithFormat:@"%d",arc4random_uniform(2)];
-        self.receiverID = [NSString stringWithFormat:@"%d",arc4random_uniform(2)];
-        self.indexs = [NSString stringWithFormat:@"%d",arc4random_uniform(2)];
-        self.msg = dict[@"text"];
+//        XHLog(@"---arc4random%d---",arc4random_uniform(2)) ;
+        self.userID = dict[@"userID"];
+        self.senderID = dict[@"senderID"];
+        self.receiverID = dict[@"receiverID"];
+        self.indexs = dict[@"indexs"];
+        self.msg = dict[@"msg"];
         self.time = dict[@"time"];
 //        [self setValuesForKeysWithDictionary:dict];
     }

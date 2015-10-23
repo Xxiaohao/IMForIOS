@@ -10,6 +10,8 @@
 #import "XHMessageCell.h"
 #import "XHChatBean.h"
 #import "XHMessageFrame.h"
+#import "XHMessageClient.h"
+#import "XHUserInfo.h"
 
 @interface XHMessageListController ()<UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *voice;
@@ -28,7 +30,7 @@
 //    if (_messageFrames == nil) {
 //        NSString *path = [[NSBundle mainBundle] pathForResource:@"messages.plist" ofType:nil];
 //        NSArray *arrayDict = [NSArray arrayWithContentsOfFile:path];
-//        
+//
 //        NSMutableArray *arrayModels = [NSMutableArray array];
 //        for (NSDictionary *dict in arrayDict) {
 //            // 创建一个数据模型
@@ -50,19 +52,12 @@
 //    return _messageFrames;
 //}
 
--(void)setMessageFrames:(NSMutableArray *)messageFrames{
-    for (NSDictionary *dict in messageFrames) {
-        XHChatBean *chatModel = [XHChatBean chatWithDict:dict];
-        XHMessageFrame *modelFrame = [[XHMessageFrame alloc]init];
-        modelFrame.chatBean = chatModel;
-        // 把frame 模型加到arrayModels
-        [_messageFrames addObject:modelFrame];
-    }
-}
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title = @"张君";
+    //初始化装载消息的messageFrames
+    self.messageFrames = [NSMutableArray array];
+    
     // 取消分割线
     self.msgTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
@@ -74,9 +69,9 @@
     
     //设置msgTableView顶部和navigativeBar的底部相连
     CGRect navigativeBarFrame = self.navigationController.navigationBar.frame;
-//    CGPoint offsetPoint =CGPointMake(0, -navigativeBarFrame.size.height-navigativeBarFrame.origin.y);
-    XHLog(@"---------%@", NSStringFromCGRect(self.navigationController.navigationBar.frame ));
-//    self.msgTableView.contentOffset = offsetPoint;
+    //    CGPoint offsetPoint =CGPointMake(0, -navigativeBarFrame.size.height-navigativeBarFrame.origin.y);
+    //    XHLog(@"---------%@", NSStringFromCGRect(self.navigationController.navigationBar.frame ));
+    //    self.msgTableView.contentOffset = offsetPoint;
     self.msgTableView.contentInset = UIEdgeInsetsMake(navigativeBarFrame.size.height+navigativeBarFrame.origin.y, 0, 0, 0);
     // 设置文本框最左侧有一段间距
     UIView *leftVw = [[UIView alloc] init];
@@ -95,31 +90,50 @@
     [center addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
 }
 
+-(void)handleNewMessage:(NSDictionary *)dict{
+    XHChatBean *chatModel = [XHChatBean chatWithDict:dict];
+    XHMessageFrame *messageFrame = [[XHMessageFrame alloc]init];
+    //    XHLog(@"--modelFrame is %@-",modelFrame);
+    chatModel.headImg = [NSString stringWithFormat:@"%03d", self.contactPerson.upheadspe];
+    messageFrame.chatBean = chatModel;
+    // 把frame 模型加到arrayModels
+    [self.messageFrames addObject:messageFrame];
+    
+    XHLog(@"-----reload--self.messageFrames.count %d--%@",self.contactPerson.upheadspe,self.contactPerson);
+    [self.msgTableView reloadData];
+}
+
 // 当键盘上的return键被单击的时候触发
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
+    
     // 1. 获取用户输入的文本
     NSString *text = textField.text;
+    NSDictionary *chatBeanDict = [[NSDictionary alloc]initWithObjectsAndKeys:@"",@"userID",@"184211",@"senderID",@"120059",@"receiverID",@"",@"AUDIO_SAMPLE_RATE",@"",@"AUDIO_SAMPLE_SIZE_IN_BITS",@"",@"AUDIO_CHANNELS",@[@"0"],@"msgFlagQueue",@[text],@"msgQueue",text,@"msg",@"",@"indexs",@"",@"time", nil];
+    XHChatBean *chatBean = [XHChatBean chatWithDict:chatBeanDict];
+    XHMessageFrame *messageFrame = [[XHMessageFrame alloc]init];
+    chatBean.time =[NSString stringWithFormat:@"%@",[NSDate date]];
+    chatBean.headImg = [NSString stringWithFormat:@"%03d", [XHUserInfo sharedXHUserInfo].upheadspe];
+    messageFrame.chatBean = chatBean;
+    [self.messageFrames addObject:messageFrame];
+    
+    [[XHMessageClient shareMessageClient]sendingDataWithCommandID:@"120" andCommandResult:@"-1" andCommandContent:chatBeanDict];
     
     // 清空文本框
     textField.text = nil;
-    
     // 刷新UITableView的数据
     [self.msgTableView reloadData];
     
     // 把最后一行滚动到最上面
     NSIndexPath *idxPath = [NSIndexPath indexPathForRow:self.messageFrames.count - 1 inSection:0];
     [self.msgTableView scrollToRowAtIndexPath:idxPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-    
     return YES;
 }
 
 - (void)keyboardWillChangeFrame:(NSNotification *)noteInfo
 {
     //    NSLog(@"通知名称: %@", noteInfo.name);
-    //
     //    NSLog(@"通知的发布者: %@", noteInfo.object);
-    //
     //    NSLog(@"通知的具体内容: %@", noteInfo.userInfo);
     // 1. 获取当键盘显示完毕或者隐藏完毕后的Y值
     CGRect rectEnd = [noteInfo.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
@@ -129,16 +143,17 @@
     // 1. 如果是键盘弹出事件, 那么计算出的值就是负的键盘的高度
     // 2. 如果是键盘的隐藏事件, 那么计算出的值就是零， 因为键盘在隐藏以后, 键盘的Y值就等于屏幕的高度。
     CGFloat tranformValue = keyboardY - self.view.frame.size.height;
-
-    [UIView animateWithDuration:5 animations:^{
+    //    XHLog(@"tranformValue is %f and rectEnd is %@",tranformValue,NSStringFromCGRect(rectEnd));
+    [UIView animateWithDuration:0.25 animations:^{
         // 让控制器的View执行一次“平移”
         self.view.transform = CGAffineTransformMakeTranslation(0, tranformValue);
-
     }];
-
+    
     // 让UITableView的最后一行滚动到最上面
-    NSIndexPath *lastRowIdxPath = [NSIndexPath indexPathForRow:self.messageFrames.count - 1 inSection:0];
-    [self.msgTableView scrollToRowAtIndexPath:lastRowIdxPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    if (self.messageFrames.count>0) {
+        NSIndexPath *lastRowIdxPath = [NSIndexPath indexPathForRow:self.messageFrames.count - 1 inSection:0];
+        [self.msgTableView scrollToRowAtIndexPath:lastRowIdxPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    }
 }
 
 - (void)dealloc
@@ -157,7 +172,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"----count----%ld",self.messageFrames.count);
+    NSLog(@"----messageList count----%ld",self.messageFrames.count);
     return self.messageFrames.count;
 }
 
@@ -165,12 +180,11 @@
     XHMessageFrame *messageFrame = self.messageFrames[indexPath.row];
     XHMessageCell *chatBeanCell = [XHMessageCell messageCellWithTableView:tableView];
     chatBeanCell.messageFrame = messageFrame;
-    //    chatBeanCell.textLabel.text=[NSString stringWithFormat:@"%ld",indexPath.row]  ;
+    
     return chatBeanCell;
 }
 
 #pragma mark -Table view delegate
-
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     [self.view endEditing:YES];
 }

@@ -13,4 +13,6 @@
 @property (nonatomic,strong)NSArray *contacts;
 @property (nonatomic,strong)NSArray *groupInfos;
 
+-(void)addContactTable;
+
 @end

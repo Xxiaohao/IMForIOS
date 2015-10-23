@@ -9,14 +9,17 @@
 #import "ViewController.h"
 #import "XHTabViewController.h"
 #import "XHAsyncSocketClient.h"
+#import "XHUserInfo.h"
+
 
 @interface ViewController ()<UITextFieldDelegate,SessionServerDelegate>{
-    
+    XHUserInfo *userInfo;
 }
 @property (weak, nonatomic) IBOutlet UITextField *pw_word;
 @property (weak, nonatomic) IBOutlet UITextField *user_field;
 @property (weak, nonatomic) IBOutlet UIButton *login_button;
 @property (nonatomic,strong) XHTabViewController *tabViewController;
+
 
 #pragma mark block
 @property (nonatomic,copy) void (^loginAction)(NSString *username,NSString *password);
@@ -31,21 +34,25 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"viewController load");
+    userInfo = [XHUserInfo sharedXHUserInfo];
+    NSLog(@"viewController1 load");
     [XHAsyncSocketClient shareSocketClient].sessionServerDelegate = self;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kbFrameWillChange:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    [userInfo loadUserInfoFromSanbox];
+    self.user_field.text = userInfo.userID;
+    self.pw_word.text = userInfo.passWord;
     // Do any additional setup after loading the view, typically from a nib.
 }
 
 -(void)kbFrameWillChange:(NSNotification *)noti{
     // 获取窗口的高度
-    CGFloat windowH = [UIScreen mainScreen].bounds.size.height;
-    // 键盘结束的Frm
-    CGRect kbEndFrm = [noti.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    // 获取键盘结束的y值
-    CGFloat kbEndY = kbEndFrm.origin.y;
+//    CGFloat windowH = [UIScreen mainScreen].bounds.size.height;
+//    // 键盘结束的Frm
+//    CGRect kbEndFrm = [noti.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+//    // 获取键盘结束的y值
+//    CGFloat kbEndY = kbEndFrm.origin.y;
     
-    NSLog(@"---%@--%fd-",noti.userInfo,kbEndY);
+//    NSLog(@"---%@--%fd-",noti.userInfo,kbEndY);
     //    self.inputViewConstraint.constant = windowH - kbEndY;
 }
 
@@ -54,17 +61,18 @@
     // Dispose of any resources that can be recreated.
 }
 
+
 #pragma mark 点击登录
 - (IBAction)loginClick {
     NSString *user = self.user_field.text;
     NSString *pw = self.pw_word.text;
     
-    XHAsyncSocketClient *sessionClient = [XHAsyncSocketClient shareSocketClient];
-    
-    [sessionClient loginWithBlock:^(int result,NSDictionary *dict) {
+    [[XHAsyncSocketClient shareSocketClient] loginWithUserName:(NSString *)user andUserPW:(NSString *)pw andBlock:^(int result,NSDictionary *dict) {
         [self handleResult:result AndContentDict:dict];
     }];
-    NSLog(@"-----%@-------%@----",user,pw);
+    userInfo.userID = user;
+    userInfo.passWord = pw;
+//    NSLog(@"-----%@-------%@----",user,pw);
 }
 
 -(void)handleResult:(int)result AndContentDict:(NSDictionary *)dict{
@@ -75,6 +83,9 @@
                 [self dismissViewControllerAnimated:YES completion:nil];
                 self.tabViewController =[[XHTabViewController alloc]init];
                 self.view.window.rootViewController = self.tabViewController;
+                userInfo.upheadspe = [dict[@"upheadspe"] intValue];
+                [userInfo saveUserInfoToSanbox];
+//                XHLog(@"self message is %@ ",dict);
             }
                 break;
             case 8:
@@ -94,7 +105,7 @@
 
 #pragma mark SessionServerDelegate
 -(void)showFriendsWithDict:(NSDictionary *)dict{
-    XHLog(@"--dict.count-----%@--------",dict);
+    XHLog(@"-showFriendsWithDict-dict.count-----%@--------",dict);
 }
 
 -(void)searchContacts:(NSDictionary *)dict{

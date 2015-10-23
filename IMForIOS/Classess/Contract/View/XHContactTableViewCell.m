@@ -24,6 +24,7 @@
 //    NSLog(@"contactModel");
     self.nickName.text=contactModel.userName;
     self.userSigner.text = contactModel.userSignature;
+    self.headImage.image = [UIImage imageNamed:[NSString stringWithFormat:@"%03d",contactModel.upheadspe]];
 }
 
 

@@ -10,6 +10,7 @@
 
 @interface XHContactModel : NSObject
 
+
 @property (nonatomic,copy)NSString *userID;//用户账号
 @property (nonatomic,copy)NSString *userName;//用户姓名
 @property (nonatomic,copy)NSString *userPassword;//用户密码

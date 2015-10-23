@@ -26,25 +26,23 @@
     self.messageViewController = [[XHMessageViewController alloc]init];
     [self addChildVC:self.messageViewController title:@"消息" image:@"tabbar_message_center" selectImage:@"tabbar_message_center_selected"];
     
-//    self.messageViewController = messageViewController;
     self.contactViewController = [[XHContactViewController alloc]init];
     [self addChildVC:self.contactViewController title:@"联系人" image:@"tabbar_profile" selectImage:@"tabbar_profile_selected"];
-    
-    
-//    self.contactViewController = contactViewController;
+  
     self.myselfViewController = [[XHMyselfViewController alloc]init];
     [self addChildVC:self.myselfViewController title:@"我" image:@"tabbar_home" selectImage:@"tabbar_home_selected"];
-//    self.myselfViewController = myselfViewController;
+//    XHLog(@"---tabbar frame is %@----",NSStringFromCGRect( self.tabBar.frame));
 }
 
 -(void)setContacts:(NSArray *)contacts{
-    XHLog(@"----tabView---");
+//    XHLog(@"----tabView---");
     _contacts = contacts;
     self.contactViewController.contacts = self.contacts;
+    self.messageViewController.contacts = self.contacts;
 }
 
 -(void)setGroupInfos:(NSArray *)groupInfos{
-    XHLog(@"---groupInfos---");
+//    XHLog(@"---groupInfos---");
     _groupInfos = groupInfos;
     self.contactViewController.groupInfos = self.groupInfos;
 }
@@ -71,25 +69,14 @@
     
     
     XHNavigationViewController *navigationViewController =[[XHNavigationViewController alloc] initWithRootViewController:target];
+//    XHLog(@"navigationbar frame is %@" ,NSStringFromCGRect(navigationViewController.navigationBar.frame));
     [self addChildViewController:navigationViewController];
+    [self.contactViewController addContactTable];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-
-
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

@@ -16,9 +16,11 @@ enum{
     SocketOfflineByUser,        //用户断开
     SocketOfflineByWifiCut,     //wifi 断开
 };
+
 @protocol MessageViewDelegate <NSObject>
 
 -(void)showMessageView:(NSDictionary *)dict;
+-(void)didEndConnectToMessageServer;
 
 @end
 
@@ -27,7 +29,6 @@ enum{
 @property (nonatomic,strong) AsyncSocket *socket;
 @property (nonatomic,retain) NSTimer *heartTimer;
 @property (nonatomic,strong) NSMutableData *allData;
-
 @property (nonatomic,assign)id<MessageViewDelegate> messageViewDelegate;
 
 
@@ -40,6 +41,5 @@ enum{
 -(void)cutOffSocket;
 
 // 发送消息
-- (void)sendMessage:(id)message;
-
+- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSDictionary *)commandContent;
 @end

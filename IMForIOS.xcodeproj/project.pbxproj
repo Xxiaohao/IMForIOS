@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4BB215E91BD7669100040907 /* XHUserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB215E81BD7669100040907 /* XHUserInfo.m */; };
 		4BB47F221BCF30AD009EB765 /* XHMessageListController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4BB47F211BCF30AD009EB765 /* XHMessageListController.xib */; };
 		4BB47F2F1BCF3DD2009EB765 /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB47F261BCF3DD2009EB765 /* AsyncSocket.m */; };
 		4BB47F301BCF3DD2009EB765 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB47F281BCF3DD2009EB765 /* AsyncUdpSocket.m */; };
@@ -55,6 +56,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4BB215E61BD73A2700040907 /* Singleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Singleton.h; sourceTree = "<group>"; };
+		4BB215E71BD7669100040907 /* XHUserInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHUserInfo.h; sourceTree = "<group>"; };
+		4BB215E81BD7669100040907 /* XHUserInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHUserInfo.m; sourceTree = "<group>"; };
 		4BB47F211BCF30AD009EB765 /* XHMessageListController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = XHMessageListController.xib; sourceTree = "<group>"; };
 		4BB47F251BCF3DD2009EB765 /* AsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncSocket.h; sourceTree = "<group>"; };
 		4BB47F261BCF3DD2009EB765 /* AsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsyncSocket.m; sourceTree = "<group>"; };
@@ -327,6 +331,8 @@
 		4BEED2F01BBA7D6700F3A64D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4BB215E71BD7669100040907 /* XHUserInfo.h */,
+				4BB215E81BD7669100040907 /* XHUserInfo.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -441,6 +447,7 @@
 				4BEED3271BBA7EF300F3A64D /* XHAsyncSocketClient.m */,
 				4BE7AEF81BCB9B1E00A1E410 /* XHMessageClient.h */,
 				4BE7AEF91BCB9B1E00A1E410 /* XHMessageClient.m */,
+				4BB215E61BD73A2700040907 /* Singleton.h */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -564,6 +571,7 @@
 				4BE7AEFA1BCB9B1E00A1E410 /* XHMessageClient.m in Sources */,
 				4BEED3281BBA7EF300F3A64D /* XHAsyncSocketClient.m in Sources */,
 				4BEED3101BBA7D6700F3A64D /* UIBarButtonItem+Extension.m in Sources */,
+				4BB215E91BD7669100040907 /* XHUserInfo.m in Sources */,
 				4BE7AF001BCBAEF200A1E410 /* XHMessageViewController.m in Sources */,
 				4BEED3221BBA7EE900F3A64D /* ViewController.m in Sources */,
 				4BE7AEF71BCB888C00A1E410 /* XHGroupModel.m in Sources */,

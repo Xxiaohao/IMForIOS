@@ -31,9 +31,9 @@
     [segmentedControl setTitle:@"讨论组" forSegmentAtIndex:1];
     [segmentedControl addTarget:self action:@selector(didClicksegmentedControlAction:) forControlEvents:UIControlEventValueChanged];
     self.navigationItem.titleView = segmentedControl;
-    
+//    XHLog(@"------contactView load--navigationItem is %@---",self.navigationItem);
     //     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"设置" style:0 target:self action:@selector(setting)];
-    [self addContactTable];
+//    [self addContactTable];
 }
 
 -(void)didClicksegmentedControlAction:(UISegmentedControl *)seg{
@@ -69,16 +69,23 @@
 //}
 
 -(void)addContactTable{
-    NSLog(@"----height--is %@--",self.navigationController.navigationBar);
+//    NSLog(@"----height--is %@--",self.navigationController.navigationBar);
+    
+    CGRect navigationBarFrame = self.navigationController.navigationBar.frame;
+    CGRect tabBarFrame = self.tabBarController.tabBar.frame;
+    CGRect subViewFrame = CGRectMake(0, navigationBarFrame.size.height+20, navigationBarFrame.size.width, tabBarFrame.origin.y-navigationBarFrame.size.height-20);
+    
     self.groupTableController  = [[XHGroupTableController alloc]init];
-    self.groupTableController.view.frame = self.view.frame;
+    self.groupTableController.view.frame = subViewFrame;
     [self.view addSubview:self.groupTableController.view];
     [self addChildViewController:self.groupTableController];
     
     self.contactTableController  = [[XHContactTableController alloc]init];
-    self.contactTableController.view.frame = self.view.frame;
+    self.contactTableController.view.frame = subViewFrame;
     [self.view addSubview:self.contactTableController.view];
     [self addChildViewController:self.contactTableController];
+    
+//    XHLog(@"---contact-frame--%@--navigatvebar fram is %@-",NSStringFromCGRect(self.navigationController.navigationBar.frame),NSStringFromCGRect(self.tabBarController.tabBar.frame));
     
     self.selectIndex = 1;
     self.selectViewController = self.contactTableController;
@@ -95,13 +102,13 @@
 -(void)setContacts:(NSArray *)contacts{
     _contacts = contacts;
     self.contactTableController.contacts = self.contacts;
-    XHLog(@"---contact--");
+//    XHLog(@"---contact--");
 }
 
 -(void)setGroupInfos:(NSArray *)groupInfos{
     _groupInfos = groupInfos;
     self.groupTableController.groupInfos = groupInfos;
-    XHLog(@"---group--");
+//    XHLog(@"---group--");
 }
 
 

@@ -8,12 +8,10 @@
 
 #import "XHMessageClient.h"
 
-#define READ_TIME_OUT 20
-//设置写入超时 -1 表示不会使用超时
-#define WRITE_TIME_OUT 20
-#define MAX_BUFFER 1024
+
 
 @implementation XHMessageClient
+
 
 static XHMessageClient *messageClient=nil;
 
@@ -44,32 +42,33 @@ static XHMessageClient *messageClient=nil;
 - (void)startConnectSocket
 {
     self.socket = [[AsyncSocket alloc] initWithDelegate:self];
-    [self.socket setRunLoopModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
-    if (![self SocketOpen:HOST port:PORT] )
+    XHLog(@"---self.socket isConnected -1---" );
+//    [self.socket setRunLoopModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+    if ([self SocketOpen:MESSAGE_SERVER_IP port:MESSAGE_SERVER_PORT] )
     {
-        
+
     }
     
 }
 
 - (NSInteger)SocketOpen:(NSString*)addr port:(NSInteger)port
 {
-    
     if (![self.socket isConnected])
     {
         NSError *error = nil;
         if (![self.socket connectToHost:addr onPort:port withTimeout:TIME_OUT error:&error]) {
             NSLog(@"error---%@",error);
-        };
+        }
     }
-    return 0;
+    return 1;
 }
 
 
 - (void)onSocket:(AsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port
 {
     //这是异步返回的连接成功，
-    NSLog(@"didConnectToHost %@：%d",host,port);
+    NSLog(@"didConnectToMessageServerHost %@：%d",host,port);
+    [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
     
     //    //通过定时器不断发送消息，来检测长连接
     //    self.heartTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(checkLongConnectByServe) userInfo:nil repeats:YES];
@@ -77,13 +76,13 @@ static XHMessageClient *messageClient=nil;
 }
 
 // 心跳连接
--(void)checkLongConnectByServe{
-    
-    // 向服务器发送固定可是的消息，来检测长连接
-    NSString *longConnect = @"connect is here";
-    NSData   *data  = [longConnect dataUsingEncoding:NSUTF8StringEncoding];
-    [self.socket writeData:data withTimeout:10 tag:1];
-}
+//-(void)checkLongConnectByServe{
+//    
+//    // 向服务器发送固定可是的消息，来检测长连接
+//    NSString *longConnect = @"connect is here";
+//    NSData   *data  = [longConnect dataUsingEncoding:NSUTF8StringEncoding];
+//    [self.socket writeData:data withTimeout:10 tag:1];
+//}
 
 -(void)cutOffSocket
 {
@@ -120,17 +119,6 @@ static XHMessageClient *messageClient=nil;
         return;
     }
 }
-
-
-//- (void)sendMessage:(id)message
-//{
-//    //像服务器发送数据
-//    //    NSData *cmdData = [message dataUsingEncoding:NSUTF8StringEncoding];
-//    NSData *cmdData = [self prepareSendingDataWithCommandID: andCommandResult:<#(NSString *)#> andCommandContent:<#(NSDictionary *)#>];
-//    
-//    
-//}
-
 
 //发送消息成功之后回调
 - (void)onSocket:(AsyncSocket *)sock didWriteDataWithTag:(long)tag
@@ -178,11 +166,11 @@ static XHMessageClient *messageClient=nil;
     NSString *commandID = [dic objectForKey:@"commandID"];
     NSString *commandResult = [dic objectForKey:@"commandResult"];
     NSDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:[commandContent dataUsingEncoding:NSUTF8StringEncoding ] options:NSJSONReadingMutableLeaves error:nil];
-    //    BOOL flag = ([commandResult intValue]==8);
     XHLog(@"-------result is %@----",commandResult);
     switch ([commandID intValue]) {
         case 120:
         {
+//            XHLog(@"--message--%@--",contentDic);
             [self.messageViewDelegate showMessageView:contentDic];
         }
             break;
@@ -200,6 +188,7 @@ static XHMessageClient *messageClient=nil;
         NSLog(@" willDisconnectWithError %ld   err = %@",sock.userData,[err description]);
         if (err.code == 57) {
             self.socket.userData = SocketOfflineByWifiCut;
+            
         }
     }
 }
@@ -207,12 +196,8 @@ static XHMessageClient *messageClient=nil;
 /**
  *对要发送的数据进行封装再发送
  */
-- (void) sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSDictionary *)commandContent{
+- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSDictionary *)commandContent{
     NSError *err = nil;
-//    NSString *command = @"0";
-//    NSString *commandResult = @"-1";
-//    NSString *contactsVersion = @"0";
-//    NSDictionary *msg = @{@"userID":@"184211",@"userPassword":@"1",@"loginFlag":@"2",nil};
     NSMutableDictionary *JsonDic = [NSMutableDictionary dictionaryWithObjectsAndKeys:commandID,@"commandID" ,commandResult,@"commandResult",commandContent,@"commandContent",nil];
     
     NSData *JsonString = [NSJSONSerialization dataWithJSONObject:JsonDic options:NSJSONWritingPrettyPrinted error:&err];  //Json的输入参数必须为NSArray或者NSDictionary
@@ -233,8 +218,7 @@ static XHMessageClient *messageClient=nil;
     [sendingData appendData:lengthData];
     [sendingData appendData:JsonString];
     //NSLog(@"发送出的数据为：%@",sendingData);
-    [self.socket writeData:sendingData withTimeout:-1 tag:1];
-//    return sendingData;
+    [self.socket writeData:sendingData withTimeout:WRITE_TIME_OUT tag:1];
 }
 
 

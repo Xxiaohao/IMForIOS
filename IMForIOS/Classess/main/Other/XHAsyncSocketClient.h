@@ -21,15 +21,13 @@ typedef void(^SessionServerBlock)(int result,NSDictionary *dict);
 
 @optional
 -(void)showFriendsWithDict:(NSDictionary *)dict;
-
 -(void)searchContacts:(NSDictionary *)dict;
-
 @end
 
 @interface XHAsyncSocketClient : NSObject<AsyncSocketDelegate>
 @property (nonatomic,strong) AsyncSocket *socket;
 @property (nonatomic,retain) NSTimer *heartTimer;
-@property (nonatomic,strong) NSMutableData *allData;
+@property (nonatomic,strong) NSMutableData *allData;//通过tcp发送的所有数据
 @property (nonatomic,assign) id<SessionServerDelegate> sessionServerDelegate;
 //@property (nonatomic,strong)NSArray *friends;
 
@@ -42,11 +40,11 @@ typedef void(^SessionServerBlock)(int result,NSDictionary *dict);
 -(void)cutOffSocket;
 
 // 发送消息
-- (void)sendMessage:(id)message;
+- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSDictionary *)commandContent;
 
 /**
  *登录
  */
--(void)loginWithBlock:(SessionServerBlock)returnBlock;
+-(void)loginWithUserName:(NSString *)userName andUserPW:(NSString *)userPw andBlock:(SessionServerBlock)returnBlock;
  
 @end

@@ -10,6 +10,7 @@
 #import "XHChatBean.h"
 #import <UIKit/UIKit.h>
 #import "NSString+XHNSStringExt.h"
+#import "XHUserInfo.h"
 
 @implementation XHMessageFrame
 
@@ -34,16 +35,12 @@
         _timeFrame = CGRectMake(timeX, timeY, timeW, timeH);
 //    }
     
-    
-    
     // 计算头像的frame
     CGFloat iconW = 40;
     CGFloat iconH = 40;
     CGFloat iconY = CGRectGetMaxY(_timeFrame) + margin;
-    CGFloat iconX = [chatBean.userID isEqualToString:chatBean.receiverID ]? margin : screenW - margin - iconW;
+    CGFloat iconX = [[XHUserInfo sharedXHUserInfo].userID isEqualToString:chatBean.receiverID ]? margin : screenW - margin - iconW;
     _iconFrame = CGRectMake(iconX, iconY, iconW, iconH);
-    
-    
 
     // 计算消息正文的frame
     // 1. 先计算正文的大小
@@ -52,10 +49,8 @@
     CGFloat textH = textSize.height + 30;
     // 2. 再计算x,y
     CGFloat textY = iconY;
-    CGFloat textX = [chatBean.userID isEqualToString:chatBean.receiverID ] ? CGRectGetMaxX(_iconFrame) : (screenW - margin - iconW - textW);
+    CGFloat textX = [[XHUserInfo sharedXHUserInfo].userID isEqualToString:chatBean.receiverID ] ? CGRectGetMaxX(_iconFrame) : (screenW - margin - iconW - textW);
     _textFrame = CGRectMake(textX, textY, textW, textH);
-    
-    
     
     // 计算行高
     // 获取 头像的最大的Y值和正文的最大的Y值, 然后用最大的Y值+ margin
