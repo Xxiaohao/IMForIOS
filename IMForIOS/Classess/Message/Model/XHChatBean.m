@@ -10,6 +10,8 @@
 
 @implementation XHChatBean
 
+MJExtensionLogAllProperties
+
 -(instancetype)initWithDict:(NSDictionary *)dict{
     if (self = [super init]) {
 //        XHLog(@"---arc4random%d---",arc4random_uniform(2)) ;

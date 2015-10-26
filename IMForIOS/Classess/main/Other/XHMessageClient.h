@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "AsyncSocket.h"
 #import "XHMessageViewController.h"
-
+#import "Singleton.h"
 
 enum{
     SocketOfflineByServer,      //服务器掉线
@@ -31,6 +31,7 @@ enum{
 @property (nonatomic,strong) NSMutableData *allData;
 @property (nonatomic,assign)id<MessageViewDelegate> messageViewDelegate;
 
+singleton_interface(XHMessageCell);
 
 +(XHMessageClient *)shareMessageClient;
 

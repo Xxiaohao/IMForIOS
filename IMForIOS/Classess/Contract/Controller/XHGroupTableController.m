@@ -11,14 +11,14 @@
 
 @interface XHGroupTableController ()
 
-
-
 @end
 
 @implementation XHGroupTableController
 
 - (void)viewDidLoad {
+    XHLog(@"groupTable is load");
     [super viewDidLoad];
+    
 
 }
 
@@ -41,12 +41,8 @@
         groupCell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
     groupCell.textLabel.text = groupModel.groupName;
-    
-    // Configure the cell...
-    
+
     return groupCell;
 }
-
-
 
 @end

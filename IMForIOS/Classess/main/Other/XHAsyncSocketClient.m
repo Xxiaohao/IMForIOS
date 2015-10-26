@@ -16,29 +16,33 @@
 
 @implementation XHAsyncSocketClient
 
+singleton_implementation(XHAsyncSocketClient);
+
 static XHAsyncSocketClient *socketClient=nil;
 
-+(XHAsyncSocketClient *)shareSocketClient{
-    @synchronized(self){
-        if (!socketClient) {
-            socketClient = [[[self class] alloc]init];
-        }
-    }
-    return socketClient;
-}
 
-+(id)allocWithZone:(NSZone *)zone
-{
-    @synchronized(self)
-    {
-        if (socketClient == nil)
-        {
-            socketClient = [super allocWithZone:zone];
-            return socketClient;
-        }
-    }
-    return nil;
-}
+
+//+(XHAsyncSocketClient *)shareSocketClient{
+//    @synchronized(self){
+//        if (!socketClient) {
+//            socketClient = [[[self class] alloc]init];
+//        }
+//    }
+//    return socketClient;
+//}
+//
+//+(id)allocWithZone:(NSZone *)zone
+//{
+//    @synchronized(self)
+//    {
+//        if (socketClient == nil)
+//        {
+//            socketClient = [super allocWithZone:zone];
+//            return socketClient;
+//        }
+//    }
+//    return nil;
+//}
 
 //建立长连接
 - (void)startConnectSocket

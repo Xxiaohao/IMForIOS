@@ -10,6 +10,8 @@
 
 @interface XHMessageViewTableCell : UITableViewCell
 
+@property (nonatomic,strong)NSArray *messageArrays;
+
 +(instancetype)messageViewCellWithTableView:(UITableView *)tableview;
 
 @end

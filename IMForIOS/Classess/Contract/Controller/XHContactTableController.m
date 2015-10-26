@@ -101,6 +101,9 @@
     return 50;
 }
 
+-(void)dealloc{
+    XHLog(@"------");
+}
 
 
 @end

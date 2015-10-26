@@ -8,18 +8,27 @@
 
 #import "XHMessageViewTableCell.h"
 
+@interface XHMessageViewTableCell()
+
+@property (weak, nonatomic) IBOutlet UIImageView *headImage;
+@property (weak, nonatomic) IBOutlet UILabel *userName;
+@property (weak, nonatomic) IBOutlet UILabel *msgTime;
+@property (weak, nonatomic) IBOutlet UILabel *msgCount;
+@property (weak, nonatomic) IBOutlet UILabel *msg;
+
+@end
+
+
 @implementation XHMessageViewTableCell
 
-- (void)awakeFromNib {
-    // Initialization code
+-(void)setMessageArrays:(NSArray *)messageArrays{
+    self.messageArrays = messageArrays;
+    self.headImage.image = [UIImage imageNamed:self.messageArrays[0][@""]];
+    self.userName.text = self.messageArrays[0][@"userName"];
+    self.msgTime.text = self.messageArrays[0][@"msgTime"];
+    self.msgCount.text = [NSString stringWithFormat:@"%ld",self.messageArrays.count];
+    self.msg.text = self.messageArrays[0][@"msg"];
 }
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-}
-
 
 
 +(instancetype)messageViewCellWithTableView :(UITableView *)tableView{
@@ -31,6 +40,19 @@
     return messageViewCell;
 }
 
+
+
+
+
+- (void)awakeFromNib {
+    // Initialization code
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+    
+    // Configure the view for the selected state
+}
 
 
 

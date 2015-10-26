@@ -28,26 +28,25 @@
     
     self.contactViewController = [[XHContactViewController alloc]init];
     [self addChildVC:self.contactViewController title:@"联系人" image:@"tabbar_profile" selectImage:@"tabbar_profile_selected"];
-  
+     [self.contactViewController addContactTable];
+    
     self.myselfViewController = [[XHMyselfViewController alloc]init];
     [self addChildVC:self.myselfViewController title:@"我" image:@"tabbar_home" selectImage:@"tabbar_home_selected"];
 //    XHLog(@"---tabbar frame is %@----",NSStringFromCGRect( self.tabBar.frame));
 }
 
 -(void)setContacts:(NSArray *)contacts{
-//    XHLog(@"----tabView---");
     _contacts = contacts;
     self.contactViewController.contacts = self.contacts;
     self.messageViewController.contacts = self.contacts;
 }
 
 -(void)setGroupInfos:(NSArray *)groupInfos{
-//    XHLog(@"---groupInfos---");
     _groupInfos = groupInfos;
     self.contactViewController.groupInfos = self.groupInfos;
 }
 
-
+/**tab控制器增加子控制器 */
 -(void)addChildVC:(UIViewController *)target title:(NSString *)title image:(NSString *)image selectImage:(NSString *)selectImage{
     
     target.title = title;
@@ -65,13 +64,10 @@
     fontColorSelect[NSForegroundColorAttributeName]= [UIColor orangeColor];
     [target.tabBarItem setTitleTextAttributes:fontColorSelect forState:UIControlStateSelected];
     
-//    target.navigationController.navigationBar
-    
-    
     XHNavigationViewController *navigationViewController =[[XHNavigationViewController alloc] initWithRootViewController:target];
 //    XHLog(@"navigationbar frame is %@" ,NSStringFromCGRect(navigationViewController.navigationBar.frame));
     [self addChildViewController:navigationViewController];
-    [self.contactViewController addContactTable];
+//    [self.contactViewController addContactTable];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -37,17 +37,17 @@
                             <constraint firstAttribute="width" constant="100" id="4jF-sg-Jqh"/>
                             <constraint firstAttribute="height" constant="19" id="fMl-W3-Iom"/>
                         </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="msgCount" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yMt-Es-btS">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="msgCount" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yMt-Es-btS">
                         <rect key="frame" x="259" y="26" width="40" height="14"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="qwk-SX-zIM"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="大江东去" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wDg-W3-kqA" userLabel="msg">
@@ -74,6 +74,13 @@
                     <constraint firstItem="FA7-Di-3cK" firstAttribute="leading" secondItem="PxQ-do-Tfn" secondAttribute="trailing" constant="8" id="xuj-RN-FUm"/>
                 </constraints>
             </tableViewCellContentView>
+            <connections>
+                <outlet property="headImage" destination="T2b-Op-wup" id="7mL-8d-mCU"/>
+                <outlet property="msg" destination="wDg-W3-kqA" id="6xc-YA-p7c"/>
+                <outlet property="msgCount" destination="yMt-Es-btS" id="Rsy-rF-hOx"/>
+                <outlet property="msgTime" destination="FA7-Di-3cK" id="fAy-26-CMj"/>
+                <outlet property="userName" destination="PxQ-do-Tfn" id="vO5-oV-n0l"/>
+            </connections>
             <point key="canvasLocation" x="247.5" y="196"/>
         </tableViewCell>
     </objects>

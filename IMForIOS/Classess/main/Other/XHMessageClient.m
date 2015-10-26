@@ -12,31 +12,31 @@
 
 @implementation XHMessageClient
 
+singleton_implementation(XHMessageClient);
 
 static XHMessageClient *messageClient=nil;
 
-
-+(XHMessageClient *)shareMessageClient{
-    @synchronized(self){
-        if (!messageClient) {
-            messageClient = [[[self class] alloc]init];
-        }
-    }
-    return messageClient;
-}
-
-+(id)allocWithZone:(NSZone *)zone
-{
-    @synchronized(self)
-    {
-        if (messageClient == nil)
-        {
-            messageClient = [super allocWithZone:zone];
-            return messageClient;
-        }
-    }
-    return nil;
-}
+//+(XHMessageClient *)shareMessageClient{
+//    @synchronized(self){
+//        if (!messageClient) {
+//            messageClient = [[[self class] alloc]init];
+//        }
+//    }
+//    return messageClient;
+//}
+//
+//+(id)allocWithZone:(NSZone *)zone
+//{
+//    @synchronized(self)
+//    {
+//        if (messageClient == nil)
+//        {
+//            messageClient = [super allocWithZone:zone];
+//            return messageClient;
+//        }
+//    }
+//    return nil;
+//}
 
 //建立长连接
 - (void)startConnectSocket
@@ -198,12 +198,12 @@ static XHMessageClient *messageClient=nil;
  */
 - (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSDictionary *)commandContent{
     NSError *err = nil;
-    NSMutableDictionary *JsonDic = [NSMutableDictionary dictionaryWithObjectsAndKeys:commandID,@"commandID" ,commandResult,@"commandResult",commandContent,@"commandContent",nil];
+    NSMutableDictionary *jsonDic = [NSMutableDictionary dictionaryWithObjectsAndKeys:commandID,@"commandID" ,commandResult,@"commandResult",commandContent,@"commandContent",nil];
+//    NSData *JsonString = [NSJSONSerialization dataWithJSONObject:JsonDic options:NSJSONWritingPrettyPrinted error:&err];  //Json的输入参数必须为NSArray或者NSDictionary
+    NSData *jsonString = [jsonDic JSONData];
+    NSLog(@"所发送的Json为：%@",[[NSString alloc] initWithData: jsonString encoding:NSUTF8StringEncoding]);
     
-    NSData *JsonString = [NSJSONSerialization dataWithJSONObject:JsonDic options:NSJSONWritingPrettyPrinted error:&err];  //Json的输入参数必须为NSArray或者NSDictionary
-    NSLog(@"所发送的Json为：%@",[[NSString alloc] initWithData: JsonString encoding:NSUTF8StringEncoding]);
-    
-    unsigned int datalength = (unsigned int)JsonString.length;
+    unsigned int datalength = (unsigned int)jsonString.length;
     unsigned int datatotallength = datalength + 4;
     NSLog(@"传递的数据长度为：%u int的长度为%ld",datalength,sizeof(int));
     
@@ -216,7 +216,7 @@ static XHMessageClient *messageClient=nil;
     //发送两个长度，第一个是总长度，猜测就是netty默认会解析这么长的数据。第二个就是自己去解析所带的内容
     [sendingData appendData:lengthTotalData];
     [sendingData appendData:lengthData];
-    [sendingData appendData:JsonString];
+    [sendingData appendData:jsonString];
     //NSLog(@"发送出的数据为：%@",sendingData);
     [self.socket writeData:sendingData withTimeout:WRITE_TIME_OUT tag:1];
 }

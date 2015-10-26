@@ -21,7 +21,6 @@
 @property (nonatomic,assign)float AUDIO_SAMPLE_RATE;
 @property (nonatomic,assign)int AUDIO_SAMPLE_SIZE_IN_BITS;
 @property (nonatomic,assign)int AUDIO_CHANNELS;
-
 @property (nonatomic,copy)NSString *headImg;
 
 -(instancetype)initWithDict:(NSDictionary *)dict;

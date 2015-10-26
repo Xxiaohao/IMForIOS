@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "AsyncSocket.h"
+#import "Singleton.h"
 
 
 enum{
@@ -30,6 +31,8 @@ typedef void(^SessionServerBlock)(int result,NSDictionary *dict);
 @property (nonatomic,strong) NSMutableData *allData;//通过tcp发送的所有数据
 @property (nonatomic,assign) id<SessionServerDelegate> sessionServerDelegate;
 //@property (nonatomic,strong)NSArray *friends;
+
+singleton_interface(XHAsyncSocketClient);
 
 +(XHAsyncSocketClient *)shareSocketClient;
 
