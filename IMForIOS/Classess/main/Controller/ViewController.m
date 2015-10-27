@@ -36,7 +36,7 @@
     [super viewDidLoad];
     userInfo = [XHUserInfo sharedXHUserInfo];
     NSLog(@"viewController1 load");
-    [XHAsyncSocketClient shareSocketClient].sessionServerDelegate = self;
+    [XHAsyncSocketClient sharedXHAsyncSocketClient].sessionServerDelegate = self;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kbFrameWillChange:) name:UIKeyboardWillChangeFrameNotification object:nil];
     [userInfo loadUserInfoFromSanbox];
     self.user_field.text = userInfo.userID;
@@ -67,7 +67,7 @@
     NSString *user = self.user_field.text;
     NSString *pw = self.pw_word.text;
     
-    [[XHAsyncSocketClient shareSocketClient] loginWithUserName:(NSString *)user andUserPW:(NSString *)pw andBlock:^(int result,NSDictionary *dict) {
+    [[XHAsyncSocketClient sharedXHAsyncSocketClient] loginWithUserName:(NSString *)user andUserPW:(NSString *)pw andBlock:^(int result,NSDictionary *dict) {
         [self handleResult:result AndContentDict:dict];
     }];
     userInfo.userID = user;

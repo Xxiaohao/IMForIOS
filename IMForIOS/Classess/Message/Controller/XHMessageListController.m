@@ -117,7 +117,7 @@
     messageFrame.chatBean = chatBean;
     [self.messageFrames addObject:messageFrame];
     
-    [[XHMessageClient shareMessageClient]sendingDataWithCommandID:@"120" andCommandResult:@"-1" andCommandContent:chatBeanDict];
+    [[XHMessageClient sharedXHMessageClient]sendingDataWithCommandID:@"120" andCommandResult:@"-1" andCommandContent:chatBeanDict];
     
     // 清空文本框
     textField.text = nil;

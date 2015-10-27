@@ -31,9 +31,9 @@ enum{
 @property (nonatomic,strong) NSMutableData *allData;
 @property (nonatomic,assign)id<MessageViewDelegate> messageViewDelegate;
 
-singleton_interface(XHMessageCell);
+singleton_interface(XHMessageClient);
 
-+(XHMessageClient *)shareMessageClient;
+//+(XHMessageClient *)shareMessageClient;
 
 //长连接
 - (void)startConnectSocket;

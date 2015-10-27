@@ -26,7 +26,7 @@
     [super viewDidLoad];
     //初始化消息容器messagesDict
     self.contactsMessages = [NSMutableArray array];
-    messageClient = [XHMessageClient shareMessageClient];
+    messageClient = [XHMessageClient sharedXHMessageClient];
     [messageClient startConnectSocket];
     messageClient.allData = [[NSMutableData alloc]init];
     messageClient.messageViewDelegate = self;

@@ -34,7 +34,7 @@ typedef void(^SessionServerBlock)(int result,NSDictionary *dict);
 
 singleton_interface(XHAsyncSocketClient);
 
-+(XHAsyncSocketClient *)shareSocketClient;
+//+(XHAsyncSocketClient *)shareSocketClient;
 
 //长连接
 - (void)startConnectSocket;
