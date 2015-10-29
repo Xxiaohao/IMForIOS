@@ -33,6 +33,7 @@ singleton_interface(XHUserInfo);
 @property (nonatomic,copy)NSString *nameShortPinyin;
 @property (nonatomic,copy)NSString *nickName;
 
+@property (nonatomic,strong)NSMutableArray *msgViewArray;
 
 /**
  *从沙盒获取用户数据
@@ -43,4 +44,6 @@ singleton_interface(XHUserInfo);
  */
 -(void)saveUserInfoToSanbox;
 
+/**将msgViewArray放入沙盒 */
+-(void)saveMsgViewArrayInToSanbox;
 @end

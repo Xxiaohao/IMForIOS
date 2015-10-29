@@ -10,6 +10,7 @@
 
 @interface XHAsyncSocketClient(){
     SessionServerBlock _resultSessionServerBolck;
+    SessionServerBlock _resultSearchBlock;
 }
 
 @end
@@ -51,7 +52,7 @@ static XHAsyncSocketClient *socketClient=nil;
     [self.socket setRunLoopModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
     if (![self SocketOpen:SESSION_SERVER_IP port:SESSION_SERVER_PORT] )
     {
-
+        
     }
     
 }
@@ -75,9 +76,9 @@ static XHAsyncSocketClient *socketClient=nil;
     //这是异步返回的连接成功，
     NSLog(@"didConnectSessionServerToHost %@：%d",host,port);
     
-//    //通过定时器不断发送消息，来检测长连接
-//    self.heartTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(checkLongConnectByServe) userInfo:nil repeats:YES];
-//    [self.heartTimer fire];
+    //    //通过定时器不断发送消息，来检测长连接
+    //    self.heartTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(checkLongConnectByServe) userInfo:nil repeats:YES];
+    //    [self.heartTimer fire];
 }
 
 // 心跳连接
@@ -131,15 +132,17 @@ static XHAsyncSocketClient *socketClient=nil;
 {
     NSLog(@"消息发送成功");
     //读取消息
-//    [self.socket readDataWithTimeout:-1 tag:0];
-    [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
+    //    XHLog(@"消息发送成功1，此时self.data.length is %ld",self.allData.length);
+    //    [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
+    //     XHLog(@"消息发送成功1，此时self.data.length is %ld",self.allData.length);
 }
 
 //接受消息成功之后回调
 - (void)onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
     //服务端返回消息数据量比较大时，可能分多次返回。所以在读取消息的时候，设置MAX_BUFFER表示每次最多读取多少，当data.length < MAX_BUFFER我们认为有可能是接受完一个完整的消息，然后才解析
-//当length>8的时候  我们认为可能有一条完整的消息过来了
+    //当length>8的时候  我们认为可能有一条完整的消息过来了
+    XHLog(@"allData.length is %ld",self.allData.length);
     if (self.allData.length >8) {
         [self handleBufferData];
     }
@@ -153,12 +156,12 @@ static XHAsyncSocketClient *socketClient=nil;
     NSInteger contentDataNetLength;
     memcpy(&contentDataNetLength, [contentData bytes], sizeof(int));
     NSInteger contentDataLocalLength = ntohl(contentDataNetLength);
-//    NSLog(@"--self.allData.length is -2--%ld--contentDataLength-%ld-",self.allData.length,contentDataLocalLength);
+    NSLog(@"--self.allData.length is -2--%ld--contentDataLength-%ld-",self.allData.length,contentDataLocalLength);
     //如果data的长度大于发送过来的长度contentDataNetLength+8，证明data中包含了发送过来的一整条消息
     if(self.allData.length>=(contentDataLocalLength+8)){
         NSRange readRange = NSMakeRange(8, contentDataLocalLength);
         NSData *contentData = [self.allData subdataWithRange:readRange];
-//        NSString *content = [[NSString alloc]initWithData:contentData encoding:NSUTF8StringEncoding];
+        //        NSString *content = [[NSString alloc]initWithData:contentData encoding:NSUTF8StringEncoding];
         
         NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:contentData options:NSJSONReadingMutableLeaves error:nil];
         [self handleDataWithDict:dic];
@@ -177,7 +180,7 @@ static XHAsyncSocketClient *socketClient=nil;
     NSString *commandID = [dic objectForKey:@"commandID"];
     NSString *commandResult = [dic objectForKey:@"commandResult"];
     NSDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:[commandContent dataUsingEncoding:NSUTF8StringEncoding ] options:NSJSONReadingMutableLeaves error:nil];
-//    BOOL flag = ([commandResult intValue]==8);
+    //    BOOL flag = ([commandResult intValue]==8);
     XHLog(@"-------result is %@----",commandResult);
     switch ([commandID intValue]) {
         case 0:
@@ -186,13 +189,24 @@ static XHAsyncSocketClient *socketClient=nil;
                 XHLog(@"--登录成功--%@--",[NSThread currentThread]);
                 _resultSessionServerBolck(LOGIN_SECCUSS,contentDic);
             }else if ([commandResult intValue]==8) {
-//                [self.sessionServerDelegate showFriendsWithDict:contentDic];
-//                XHLog(@"%@",contentDic);
+                //                [self.sessionServerDelegate showFriendsWithDict:contentDic];
+                //                XHLog(@"%@",contentDic);
                 _resultSessionServerBolck(8,contentDic);
             }else if([commandResult intValue] == 9){
                 _resultSessionServerBolck(9,contentDic);
                 [self.sessionServerDelegate searchContacts:contentDic];
             }
+        }
+            break;
+            //搜索功能
+        case 55:{
+            //if([commandResult intValue] == 1){
+            //搜索
+            XHLog(@"--搜索结果--%@--",contentDic);
+            _resultSearchBlock(55,contentDic);
+            
+            //               [self.sessionServerDelegate searchContacts:contentDic];
+            //}
         }
             break;
             
@@ -216,31 +230,41 @@ static XHAsyncSocketClient *socketClient=nil;
 
 -(void)loginWithUserName:(NSString *)userName andUserPW:(NSString *)userPw andBlock:(SessionServerBlock)returnBlock{
     //网络连接
-//        self.socketClient = [XHAsyncSocketClient shareSocketClient ];
-        //socket连接前先断开连接以免之前socket连接没有断开导致闪退
-        [self cutOffSocket];
-        self.socket.userData = SocketOfflineByServer;
-        [self startConnectSocket];
-        self.allData = [[NSMutableData alloc]init];
+    //        self.socketClient = [XHAsyncSocketClient shareSocketClient ];
+    //socket连接前先断开连接以免之前socket连接没有断开导致闪退
+    [self cutOffSocket];
+    self.socket.userData = SocketOfflineByServer;
+    [self startConnectSocket];
+    self.allData = [[NSMutableData alloc]init];
+    [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
     if (!_resultSessionServerBolck) {
         _resultSessionServerBolck = returnBlock;
     }
-    NSDictionary *commandContent = [[NSDictionary alloc]initWithObjectsAndKeys:userName,@"userID",userPw,@"userPassword",@"2",@"loginFlag", nil];
+    NSDictionary *commandContentDict = [[NSDictionary alloc]initWithObjectsAndKeys:userName,@"userID",userPw,@"userPassword",@"2",@"loginFlag", nil];
+    NSString *commandContent = [commandContentDict JSONString];
     [self sendingDataWithCommandID:@"0" andCommandResult:@"-1" andCommandContent:commandContent];
+}
+
+-(void)searchWithSearchType:(NSString *)searchType andContent:(NSString *)content andBlock:(SessionServerBlock)returnBlock{
+    if (!_resultSearchBlock) {
+        _resultSearchBlock = returnBlock;
+    }
+    //    self.allData = [[NSMutableData alloc]init];
+    [self sendingDataWithCommandID:SEARCH_FRIENDS andCommandResult:@"1" andCommandContent:content];
 }
 
 /**
  *对要发送的数据进行封装再发送
  */
-- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSDictionary *)commandContent{
+- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSString *)commandContent{
     
-    NSError *err = nil;
-    NSMutableDictionary *JsonDic = [NSMutableDictionary dictionaryWithObjectsAndKeys:commandID,@"commandID" ,commandResult,@"commandResult",commandContent,@"commandContent",nil];
+    NSMutableDictionary *jsonDic = [NSMutableDictionary dictionaryWithObjectsAndKeys:commandID,@"commandID" ,commandResult,@"commandResult",commandContent,@"commandContent",nil];
+    NSData *jsonString = [jsonDic JSONData];
     
-    NSData *JsonString = [NSJSONSerialization dataWithJSONObject:JsonDic options:NSJSONWritingPrettyPrinted error:&err];  //Json的输入参数必须为NSArray或者NSDictionary
-//    NSLog(@"所发送的Json为：%@",[[NSString alloc] initWithData: JsonString encoding:NSUTF8StringEncoding]);
+    //    NSData *JsonString = [NSJSONSerialization dataWithJSONObject:JsonDic options:NSJSONWritingPrettyPrinted error:&err];  //Json的输入参数必须为NSArray或者NSDictionary
+    NSLog(@"所发送的Json为：%@",[[NSString alloc] initWithData: jsonString encoding:NSUTF8StringEncoding]);
     
-    unsigned int datalength = (unsigned int)JsonString.length;
+    unsigned int datalength = (unsigned int)jsonString.length;
     unsigned int datatotallength = datalength + 4;
     
     uint32_t theInt = htonl((uint32_t)datalength);
@@ -252,9 +276,14 @@ static XHAsyncSocketClient *socketClient=nil;
     //发送两个长度，第一个是总长度，猜测就是netty默认会解析这么长的数据。第二个就是自己去解析所带的内容
     [sendingData appendData:lengthTotalData];
     [sendingData appendData:lengthData];
-    [sendingData appendData:JsonString];
+    [sendingData appendData:jsonString];
     //NSLog(@"发送出的数据为：%@",sendingData);
-    [self.socket writeData:sendingData withTimeout:WRITE_TIME_OUT tag:1];
+    [self.socket writeData:sendingData withTimeout:WRITE_TIME_OUT tag:0];
 }
+
+-(void)dealloc{
+    XHLog(@"----dealloc---%s---",__func__);
+}
+
 
 @end

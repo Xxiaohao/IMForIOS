@@ -8,13 +8,25 @@
 
 #import "XHContactModel.h"
 #import <UIKit/UIKit.h>
+#import "Singleton.h"
 
 @interface XHMessageListController : UIViewController
 
+singleton_interface(XHMessageListController)
 @property (nonatomic,strong) NSMutableArray *messageFrames;
 @property (nonatomic,strong) XHContactModel *contactPerson;
+@property (nonatomic,strong) NSString *senderID;
+@property (nonatomic,strong) NSString *visible;
 
 //对接收到的消息进行处理
 -(void)handleNewMessage:(NSDictionary *)dict;
+
+//初始化
+//-(instancetype)initWithContact:(XHContactModel *)contact andMessageArray:(NSArray *)messageArray;
+//装载数据并对数据进行处理
+-(void)loadAndHandleDataWithContact:(XHContactModel *)contact andMessageArray:(NSArray *)messageArray;
+
+-(void)pushViewController:(UIViewController *)controller;
+
 
 @end

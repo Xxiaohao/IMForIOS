@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B2C77291BE060EC000968E7 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C771F1BE060EC000968E7 /* FMDatabase.m */; };
+		4B2C772A1BE060EC000968E7 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C77211BE060EC000968E7 /* FMDatabaseAdditions.m */; };
+		4B2C772B1BE060EC000968E7 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C77231BE060EC000968E7 /* FMDatabasePool.m */; };
+		4B2C772C1BE060EC000968E7 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C77251BE060EC000968E7 /* FMDatabaseQueue.m */; };
+		4B2C772D1BE060EC000968E7 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C77281BE060EC000968E7 /* FMResultSet.m */; };
+		4B2C772F1BE06E5E000968E7 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B2C772E1BE06E5E000968E7 /* libsqlite3.dylib */; };
+		4B2C77321BE06FE5000968E7 /* XHDataBaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C77311BE06FE5000968E7 /* XHDataBaseManager.m */; };
+		4B2C77351BE1ACCC000968E7 /* XHDetailTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C77341BE1ACCC000968E7 /* XHDetailTableController.m */; };
+		4B2C77381BE1EFEB000968E7 /* XHAddContactController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C77371BE1EFEB000968E7 /* XHAddContactController.m */; };
 		4BB215E91BD7669100040907 /* XHUserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB215E81BD7669100040907 /* XHUserInfo.m */; };
 		4BB2163B1BDD1AA900040907 /* MJDictionaryCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB216251BDD1AA900040907 /* MJDictionaryCache.m */; };
 		4BB2163C1BDD1AA900040907 /* MJExtensionConst.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB216281BDD1AA900040907 /* MJExtensionConst.m */; };
@@ -67,6 +76,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4B2C771E1BE060EC000968E7 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
+		4B2C771F1BE060EC000968E7 /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		4B2C77201BE060EC000968E7 /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
+		4B2C77211BE060EC000968E7 /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
+		4B2C77221BE060EC000968E7 /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
+		4B2C77231BE060EC000968E7 /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
+		4B2C77241BE060EC000968E7 /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
+		4B2C77251BE060EC000968E7 /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
+		4B2C77261BE060EC000968E7 /* FMDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDB.h; sourceTree = "<group>"; };
+		4B2C77271BE060EC000968E7 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
+		4B2C77281BE060EC000968E7 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
+		4B2C772E1BE06E5E000968E7 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		4B2C77301BE06FE5000968E7 /* XHDataBaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHDataBaseManager.h; sourceTree = "<group>"; };
+		4B2C77311BE06FE5000968E7 /* XHDataBaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHDataBaseManager.m; sourceTree = "<group>"; };
+		4B2C77331BE1ACCC000968E7 /* XHDetailTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHDetailTableController.h; sourceTree = "<group>"; };
+		4B2C77341BE1ACCC000968E7 /* XHDetailTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHDetailTableController.m; sourceTree = "<group>"; };
+		4B2C77361BE1EFEB000968E7 /* XHAddContactController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHAddContactController.h; sourceTree = "<group>"; };
+		4B2C77371BE1EFEB000968E7 /* XHAddContactController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHAddContactController.m; sourceTree = "<group>"; };
 		4BB215E61BD73A2700040907 /* Singleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Singleton.h; sourceTree = "<group>"; };
 		4BB215E71BD7669100040907 /* XHUserInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHUserInfo.h; sourceTree = "<group>"; };
 		4BB215E81BD7669100040907 /* XHUserInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHUserInfo.m; sourceTree = "<group>"; };
@@ -166,6 +193,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B2C772F1BE06E5E000968E7 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +207,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4B2C771D1BE060EC000968E7 /* fmdb */ = {
+			isa = PBXGroup;
+			children = (
+				4B2C771E1BE060EC000968E7 /* FMDatabase.h */,
+				4B2C771F1BE060EC000968E7 /* FMDatabase.m */,
+				4B2C77201BE060EC000968E7 /* FMDatabaseAdditions.h */,
+				4B2C77211BE060EC000968E7 /* FMDatabaseAdditions.m */,
+				4B2C77221BE060EC000968E7 /* FMDatabasePool.h */,
+				4B2C77231BE060EC000968E7 /* FMDatabasePool.m */,
+				4B2C77241BE060EC000968E7 /* FMDatabaseQueue.h */,
+				4B2C77251BE060EC000968E7 /* FMDatabaseQueue.m */,
+				4B2C77261BE060EC000968E7 /* FMDB.h */,
+				4B2C77271BE060EC000968E7 /* FMResultSet.h */,
+				4B2C77281BE060EC000968E7 /* FMResultSet.m */,
+			);
+			path = fmdb;
+			sourceTree = "<group>";
+		};
 		4BB216231BDD1AA900040907 /* MJExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -212,6 +258,7 @@
 		4BB47F231BCF3DD2009EB765 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
+				4B2C771D1BE060EC000968E7 /* fmdb */,
 				4BB216231BDD1AA900040907 /* MJExtension */,
 				4BB47F241BCF3DD2009EB765 /* AysncSocket */,
 				4BB47F291BCF3DD2009EB765 /* MBProgessHUD */,
@@ -264,6 +311,7 @@
 		4BE982DB1BA2CBFB00B62F51 = {
 			isa = PBXGroup;
 			children = (
+				4B2C772E1BE06E5E000968E7 /* libsqlite3.dylib */,
 				4BE982E61BA2CBFB00B62F51 /* IMForIOS */,
 				4BE983001BA2CBFB00B62F51 /* IMForIOSTests */,
 				4BE982E51BA2CBFB00B62F51 /* Products */,
@@ -341,6 +389,10 @@
 		4BEED2D21BBA7D6700F3A64D /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				4B2C77331BE1ACCC000968E7 /* XHDetailTableController.h */,
+				4B2C77341BE1ACCC000968E7 /* XHDetailTableController.m */,
+				4B2C77361BE1EFEB000968E7 /* XHAddContactController.h */,
+				4B2C77371BE1EFEB000968E7 /* XHAddContactController.m */,
 				4BEED2D31BBA7D6700F3A64D /* XHContactViewController.h */,
 				4BEED2D41BBA7D6700F3A64D /* XHContactViewController.m */,
 				4BB47F451BD48152009EB765 /* XHContactTableController.h */,
@@ -514,6 +566,8 @@
 				4BE7AEF81BCB9B1E00A1E410 /* XHMessageClient.h */,
 				4BE7AEF91BCB9B1E00A1E410 /* XHMessageClient.m */,
 				4BB215E61BD73A2700040907 /* Singleton.h */,
+				4B2C77301BE06FE5000968E7 /* XHDataBaseManager.h */,
+				4B2C77311BE06FE5000968E7 /* XHDataBaseManager.m */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -632,6 +686,7 @@
 				4BEED3231BBA7EE900F3A64D /* XHNavigationViewController.m in Sources */,
 				4BEED31A1BBA7D6700F3A64D /* XHMyselfViewController.m in Sources */,
 				4BE7AF061BCBB07200A1E410 /* XHMessageFrame.m in Sources */,
+				4B2C772A1BE060EC000968E7 /* FMDatabaseAdditions.m in Sources */,
 				4BB47F311BCF3DD2009EB765 /* MBProgressHUD+HM.m in Sources */,
 				4BEED3241BBA7EE900F3A64D /* XHTabViewController.m in Sources */,
 				4BB47F331BCF3DD2009EB765 /* MBProgressHUD.m in Sources */,
@@ -645,12 +700,17 @@
 				4BB2163D1BDD1AA900040907 /* MJFoundation.m in Sources */,
 				4BE7AF001BCBAEF200A1E410 /* XHMessageViewController.m in Sources */,
 				4BB2163C1BDD1AA900040907 /* MJExtensionConst.m in Sources */,
+				4B2C77381BE1EFEB000968E7 /* XHAddContactController.m in Sources */,
 				4BEED3221BBA7EE900F3A64D /* ViewController.m in Sources */,
+				4B2C77291BE060EC000968E7 /* FMDatabase.m in Sources */,
+				4B2C772B1BE060EC000968E7 /* FMDatabasePool.m in Sources */,
 				4BE7AEF71BCB888C00A1E410 /* XHGroupModel.m in Sources */,
 				4BB216431BDD1AA900040907 /* NSObject+MJKeyValue.m in Sources */,
 				4BB2163B1BDD1AA900040907 /* MJDictionaryCache.m in Sources */,
 				4BEED3081BBA7D6700F3A64D /* XHContactModel.m in Sources */,
+				4B2C772D1BE060EC000968E7 /* FMResultSet.m in Sources */,
 				4BE7AF091BCBB0CC00A1E410 /* XHMessageCell.m in Sources */,
+				4B2C77321BE06FE5000968E7 /* XHDataBaseManager.m in Sources */,
 				4BB47F361BCF3DE7009EB765 /* AppDelegate.m in Sources */,
 				4BE7AF031BCBAF4600A1E410 /* XHMessageListController.m in Sources */,
 				4BE7AF101BCBB3EC00A1E410 /* NSString+XHNSStringExt.m in Sources */,
@@ -662,6 +722,8 @@
 				4BEED30B1BBA7D6700F3A64D /* XHContactTableViewCell.m in Sources */,
 				4BB216411BDD1AA900040907 /* NSObject+MJClass.m in Sources */,
 				4BEED3071BBA7D6700F3A64D /* XHContactViewController.m in Sources */,
+				4B2C772C1BE060EC000968E7 /* FMDatabaseQueue.m in Sources */,
+				4B2C77351BE1ACCC000968E7 /* XHDetailTableController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

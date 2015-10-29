@@ -18,4 +18,5 @@
 // 封装一个创建自定义Cell的方法
 + (instancetype)messageCellWithTableView:(UITableView *)tableView;
 
+
 @end

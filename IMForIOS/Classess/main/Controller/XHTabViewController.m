@@ -53,7 +53,7 @@
     target.tabBarItem.image = [UIImage imageNamed:image];
     target.tabBarItem.selectedImage = [[UIImage imageNamed:selectImage] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     
-    target.view.backgroundColor = XHRandomColor;
+//    target.view.backgroundColor = XHRandomColor;
     
     // 设置文字的样式
     NSMutableDictionary *fontColor = [NSMutableDictionary dictionary];

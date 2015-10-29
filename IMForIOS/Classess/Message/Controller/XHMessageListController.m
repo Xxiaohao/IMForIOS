@@ -12,6 +12,9 @@
 #import "XHMessageFrame.h"
 #import "XHMessageClient.h"
 #import "XHUserInfo.h"
+#import "XHDataBaseManager.h"
+
+#define TextMsg @"0"
 
 @interface XHMessageListController ()<UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *voice;
@@ -24,6 +27,22 @@
 @end
 
 @implementation XHMessageListController
+
+singleton_implementation(XHMessageListController)
+
+-(void)loadAndHandleDataWithContact:(XHContactModel *)contact andMessageArray:(NSMutableArray *)messageArray{
+//    self.messageFrames = [NSMutableArray array];
+    //相当于是读取历史消息
+    self.messageFrames = [[XHDataBaseManager sharedXHDataBaseManager] readMessageWithSender:_contactPerson.userID];
+    XHLog(@"messageFrames.count is %ld",self.messageFrames.count);
+    _contactPerson = contact;
+    for (NSDictionary *dict in messageArray) {
+        [self handleNewMessage:dict];
+    }
+    
+    self.title = self.contactPerson.userName;
+    [self.msgTableView reloadData];
+}
 
 //- (NSMutableArray *)messageFrames
 //{
@@ -52,72 +71,116 @@
 //    return _messageFrames;
 //}
 
+//-(void)pushViewController:(UIViewController *)controller{
+//    [self.navigationController pushViewController:controller animated:YES];
+//    CGRect navigativeBarFrame = controller.navigationController.navigationBar.frame;
+//    XHLog(@" contentinsert.top111 is %f",navigativeBarFrame.size.height+navigativeBarFrame.origin.y);
+//
+//}
+
+-(void)viewWillAppear:(BOOL)animated{
+    //设置msgTableView顶部和navigativeBar的底部相连
+    CGRect navigativeBarFrame = self.navigationController.navigationBar.frame;
+    XHLog(@" willappear contentinsert.top is %f",navigativeBarFrame.size.height+navigativeBarFrame.origin.y);
+    self.msgTableView.contentInset = UIEdgeInsetsMake(navigativeBarFrame.size.height+navigativeBarFrame.origin.y, 0, 0, 0);
+}
+
+//-(void)viewDidAppear:(BOOL)animated{
+//    CGRect navigativeBarFrame = self.navigationController.navigationBar.frame;
+//    XHLog(@" didappear contentinsert.top is %f",navigativeBarFrame.size.height+navigativeBarFrame.origin.y);
+//    
+//}
+//
+//-(void)viewDidLayoutSubviews{
+//    CGRect navigativeBarFrame = self.navigationController.navigationBar.frame;
+//    XHLog(@" viewDidLayoutSubviews contentinsert.top is %f",navigativeBarFrame.size.height+navigativeBarFrame.origin.y);
+//}
+//
+//-(void)viewWillLayoutSubviews{
+//    CGRect navigativeBarFrame = self.navigationController.navigationBar.frame;
+//    XHLog(@" viewWillLayoutSubviews contentinsert.top is %f",navigativeBarFrame.size.height+navigativeBarFrame.origin.y);
+//}
+
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    self.title = @"张君";
-    //初始化装载消息的messageFrames
-    self.messageFrames = [NSMutableArray array];
     
+    [super viewDidLoad];
+    XHLog(@"messagelist load");
     // 取消分割线
     self.msgTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     // 设置UITableView的背景色
     self.msgTableView.backgroundColor = [UIColor colorWithRed:236 / 255.0 green:236 / 255.0 blue:236 / 255.0 alpha:1.0];
-    
     // 设置UITableView的行不允许被选中
     self.msgTableView.allowsSelection = NO;
     
-    //设置msgTableView顶部和navigativeBar的底部相连
-    CGRect navigativeBarFrame = self.navigationController.navigationBar.frame;
-    //    CGPoint offsetPoint =CGPointMake(0, -navigativeBarFrame.size.height-navigativeBarFrame.origin.y);
-    //    XHLog(@"---------%@", NSStringFromCGRect(self.navigationController.navigationBar.frame ));
-    //    self.msgTableView.contentOffset = offsetPoint;
-    self.msgTableView.contentInset = UIEdgeInsetsMake(navigativeBarFrame.size.height+navigativeBarFrame.origin.y, 0, 0, 0);
     // 设置文本框最左侧有一段间距
     UIView *leftVw = [[UIView alloc] init];
     leftVw.frame = CGRectMake(0, 0, 5, 1);
-    
-    // 把leftVw设置给文本框
     self.inputText.leftView = leftVw;
     self.inputText.leftViewMode = UITextFieldViewModeAlways;
     
-    
-    // 监听键盘的弹出事件
-    // 1. 创建一个NSNotificationCenter对象。
+    // 监听键盘的弹出事件 创建一个NSNotificationCenter对象。
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    
-    // 2. 监听键盘的弹出通知
+    // 监听键盘的弹出通知
     [center addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
 }
 
 -(void)handleNewMessage:(NSDictionary *)dict{
     XHChatBean *chatModel = [XHChatBean chatWithDict:dict];
+    self.senderID = chatModel.senderID;
     XHMessageFrame *messageFrame = [[XHMessageFrame alloc]init];
-    //    XHLog(@"--modelFrame is %@-",modelFrame);
     chatModel.headImg = [NSString stringWithFormat:@"%03d", self.contactPerson.upheadspe];
     messageFrame.chatBean = chatModel;
     // 把frame 模型加到arrayModels
     [self.messageFrames addObject:messageFrame];
-    
-    XHLog(@"-----reload--self.messageFrames.count %d--%@",self.contactPerson.upheadspe,self.contactPerson);
     [self.msgTableView reloadData];
 }
 
 // 当键盘上的return键被单击的时候触发
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    
     // 1. 获取用户输入的文本
     NSString *text = textField.text;
-    NSDictionary *chatBeanDict = [[NSDictionary alloc]initWithObjectsAndKeys:@"",@"userID",@"184211",@"senderID",@"120059",@"receiverID",@"",@"AUDIO_SAMPLE_RATE",@"",@"AUDIO_SAMPLE_SIZE_IN_BITS",@"",@"AUDIO_CHANNELS",@[@"0"],@"msgFlagQueue",@[text],@"msgQueue",text,@"msg",@"",@"indexs",@"",@"time", nil];
-    XHChatBean *chatBean = [XHChatBean chatWithDict:chatBeanDict];
+    
+    if (text ==nil || [text isEqualToString:@""]) {
+        return 0;
+    }
+//    NSDictionary *chatBeanDict = [[NSDictionary alloc]initWithObjectsAndKeys:@"",@"userID",@"184211",@"senderID",@"120059",@"receiverID",@"",@"AUDIO_SAMPLE_RATE",@"",@"AUDIO_SAMPLE_SIZE_IN_BITS",@"",@"AUDIO_CHANNELS",@[@"0"],@"msgFlagQueue",@[text],@"msgQueue",text,@"msg",@"",@"indexs",@"",@"time", nil];
+    
+//    XHChatBean *chatBean = [XHChatBean chatWithDict:chatBeanDict];
+    //创建消息对象、消息字典
+    XHChatBean *chatBean = [[XHChatBean alloc]init];
+    chatBean.senderID = [XHUserInfo sharedXHUserInfo].userID;
+    chatBean.receiverID = self.contactPerson.userID;
+    NSMutableArray *msgFalgQueue = [NSMutableArray array];
+    [msgFalgQueue addObject:TextMsg];
+    NSMutableArray *msgQueue = [NSMutableArray array];
+    [msgQueue addObject:text];
+    chatBean.msgFlagQueue = msgFalgQueue;
+    chatBean.msgQueue = msgQueue;
+    chatBean.msg = text;
+    
+    //时间转换的时候将时区设置为utc，这样就不会有8小时的时差
+    NSDateFormatter *format = [[NSDateFormatter alloc]init];
+    [format setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+    format.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    NSString *time = [format stringFromDate:[NSDate date]];
+    chatBean.time =[NSString stringWithFormat:@"%@",time];
+    XHLog(@"11111111111111111");
+    
+    NSDictionary *chatBeanDict = chatBean.keyValues;
+    XHLog(@"chatBeanDict is %@",chatBeanDict);
+    
+    //将消息插入数据库
+    NSInteger result = [[XHDataBaseManager sharedXHDataBaseManager]insertMessageWithDict:chatBeanDict andFlag:@"read"];
+    XHLog(@" 消息发送成功 is %ld ",result);
+    
+    //设置消息的frame并放入自己的聊天页面中显示
     XHMessageFrame *messageFrame = [[XHMessageFrame alloc]init];
-    chatBean.time =[NSString stringWithFormat:@"%@",[NSDate date]];
     chatBean.headImg = [NSString stringWithFormat:@"%03d", [XHUserInfo sharedXHUserInfo].upheadspe];
     messageFrame.chatBean = chatBean;
     [self.messageFrames addObject:messageFrame];
     
-    [[XHMessageClient sharedXHMessageClient]sendingDataWithCommandID:@"120" andCommandResult:@"-1" andCommandContent:chatBeanDict];
+    [[XHMessageClient sharedXHMessageClient]sendingDataWithCommandID:PERSON_TO_PERSON_MESSAGE andCommandResult:@"-1" andCommandContent:chatBeanDict];
     
     // 清空文本框
     textField.text = nil;
@@ -193,6 +256,7 @@
     XHMessageFrame *messageFrame  = self.messageFrames[indexPath.row];
     return messageFrame.rowHeight;
 }
+
 
 
 // ******** 注意: 监听通知以后一定要在监听通知的对象的dealloc方法中移除监听 **********/.

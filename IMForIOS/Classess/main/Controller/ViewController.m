@@ -10,6 +10,7 @@
 #import "XHTabViewController.h"
 #import "XHAsyncSocketClient.h"
 #import "XHUserInfo.h"
+#import "FMDB.h"
 
 
 @interface ViewController ()<UITextFieldDelegate,SessionServerDelegate>{
@@ -41,24 +42,18 @@
     [userInfo loadUserInfoFromSanbox];
     self.user_field.text = userInfo.userID;
     self.pw_word.text = userInfo.passWord;
-    // Do any additional setup after loading the view, typically from a nib.
+    
+ 
 }
 
+
+
 -(void)kbFrameWillChange:(NSNotification *)noti{
-    // 获取窗口的高度
-//    CGFloat windowH = [UIScreen mainScreen].bounds.size.height;
-//    // 键盘结束的Frm
-//    CGRect kbEndFrm = [noti.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-//    // 获取键盘结束的y值
-//    CGFloat kbEndY = kbEndFrm.origin.y;
-    
-//    NSLog(@"---%@--%fd-",noti.userInfo,kbEndY);
-    //    self.inputViewConstraint.constant = windowH - kbEndY;
+
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 
@@ -72,7 +67,6 @@
     }];
     userInfo.userID = user;
     userInfo.passWord = pw;
-//    NSLog(@"-----%@-------%@----",user,pw);
 }
 
 -(void)handleResult:(int)result AndContentDict:(NSDictionary *)dict{
@@ -100,7 +94,7 @@
 
 
 -(void)dealloc{
-    NSLog(@"----%s---",__func__);
+    NSLog(@"--dealloc--%s---",__func__);
 }
 
 #pragma mark SessionServerDelegate

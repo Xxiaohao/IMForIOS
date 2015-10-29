@@ -62,9 +62,15 @@ singleton_implementation(XHUserInfo);
     [userDefaults setObject:self.nameShortPinyin forKey:@"nameShortPinyin"];
     [userDefaults setObject:self.nickName forKey:@"nickName"];
 
-
+    [userDefaults setObject:self.msgViewArray forKey:@"msgViewArray"];
+    
     [userDefaults synchronize];
+}
 
+-(void)saveMsgViewArrayInToSanbox{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setObject:self.msgViewArray forKey:@"msgViewArray"];
+    [userDefaults synchronize];
 }
 
 @end

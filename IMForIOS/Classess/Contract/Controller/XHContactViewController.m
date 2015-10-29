@@ -11,12 +11,16 @@
 #import "XHContactTableViewCell.h"
 #import "XHContactModel.h"
 #import "XHGroupTableController.h"
+#import "XHAsyncSocketClient.h"
+#import "XHAddContactController.h"
+
 
 @interface XHContactViewController ()
 @property (nonatomic,strong)XHContactTableController *contactTableController;
 @property (nonatomic,strong)XHGroupTableController *groupTableController;
 @property (nonatomic,strong)UIViewController *selectViewController;
 @property (nonatomic,assign)NSInteger selectIndex;
+@property (nonatomic,strong)XHAddContactController *addContactController;
 @end
 
 @implementation XHContactViewController
@@ -92,7 +96,13 @@
 }
 
 -(void)addContacts{
-
+    self.addContactController = [[XHAddContactController alloc]init];
+//
+    _addContactController.title = @"添加";
+//
+//    self.addContactController.contacts = self.contacts;
+    [self.navigationController pushViewController:self.addContactController animated:YES];
+//    XHLog(@"---contactView-addContacts--");
 }
 
 

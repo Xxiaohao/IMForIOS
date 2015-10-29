@@ -43,11 +43,17 @@ singleton_interface(XHAsyncSocketClient);
 -(void)cutOffSocket;
 
 // 发送消息
-- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSDictionary *)commandContent;
+- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSString *)commandContent;
 
 /**
  *登录
  */
 -(void)loginWithUserName:(NSString *)userName andUserPW:(NSString *)userPw andBlock:(SessionServerBlock)returnBlock;
- 
+
+/**
+ *yxl
+ *搜索
+ */
+-(void)searchWithSearchType:(NSString *)searchType andContent:(NSString *)content andBlock:(SessionServerBlock)returnBlock;
+
 @end

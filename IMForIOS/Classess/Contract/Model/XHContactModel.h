@@ -25,6 +25,10 @@
 @property (nonatomic,assign)int loginFlag;//账号登陆标志位
 @property (nonatomic,assign)int upheadspe;//头像
 //@property (nonatomic,copy)NSString *contactsVersion;//联系人版本
+@property (nonatomic,assign)NSString *allFatherNum;//
+@property (nonatomic,assign)NSString *allFatherString;
+@property (nonatomic,assign)NSString *namePinyin;
+@property (nonatomic,assign)NSString *nameShortPinyin;
 
 -(instancetype)initWithDict:(NSDictionary *)dict;
 
