@@ -36,6 +36,7 @@ singleton_implementation(XHUserInfo);
     self.namePinyin = [userDefaults objectForKey:@"namePinyin"];
     self.nameShortPinyin = [userDefaults objectForKey:@"nameShortPinyin"];
     self.nickName = [userDefaults objectForKey:@"nickName"];
+    self.msgViewArray = [userDefaults objectForKey:@"msgViewArray"];
     
     
 }

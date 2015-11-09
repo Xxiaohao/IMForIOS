@@ -22,29 +22,6 @@ singleton_implementation(XHAsyncSocketClient);
 static XHAsyncSocketClient *socketClient=nil;
 
 
-
-//+(XHAsyncSocketClient *)shareSocketClient{
-//    @synchronized(self){
-//        if (!socketClient) {
-//            socketClient = [[[self class] alloc]init];
-//        }
-//    }
-//    return socketClient;
-//}
-//
-//+(id)allocWithZone:(NSZone *)zone
-//{
-//    @synchronized(self)
-//    {
-//        if (socketClient == nil)
-//        {
-//            socketClient = [super allocWithZone:zone];
-//            return socketClient;
-//        }
-//    }
-//    return nil;
-//}
-
 //建立长连接
 - (void)startConnectSocket
 {
@@ -133,7 +110,7 @@ static XHAsyncSocketClient *socketClient=nil;
     NSLog(@"消息发送成功");
     //读取消息
     //    XHLog(@"消息发送成功1，此时self.data.length is %ld",self.allData.length);
-    //    [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
+//        [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
     //     XHLog(@"消息发送成功1，此时self.data.length is %ld",self.allData.length);
 }
 
@@ -142,7 +119,7 @@ static XHAsyncSocketClient *socketClient=nil;
 {
     //服务端返回消息数据量比较大时，可能分多次返回。所以在读取消息的时候，设置MAX_BUFFER表示每次最多读取多少，当data.length < MAX_BUFFER我们认为有可能是接受完一个完整的消息，然后才解析
     //当length>8的时候  我们认为可能有一条完整的消息过来了
-    XHLog(@"allData.length is %ld",self.allData.length);
+//    XHLog(@"allData.length is %ld",self.allData.length);
     if (self.allData.length >8) {
         [self handleBufferData];
     }
@@ -156,13 +133,11 @@ static XHAsyncSocketClient *socketClient=nil;
     NSInteger contentDataNetLength;
     memcpy(&contentDataNetLength, [contentData bytes], sizeof(int));
     NSInteger contentDataLocalLength = ntohl(contentDataNetLength);
-    NSLog(@"--self.allData.length is -2--%ld--contentDataLength-%ld-",self.allData.length,contentDataLocalLength);
+//    NSLog(@"--self.allData.length is -2--%ld--contentDataLength-%ld-",self.allData.length,contentDataLocalLength);
     //如果data的长度大于发送过来的长度contentDataNetLength+8，证明data中包含了发送过来的一整条消息
     if(self.allData.length>=(contentDataLocalLength+8)){
         NSRange readRange = NSMakeRange(8, contentDataLocalLength);
         NSData *contentData = [self.allData subdataWithRange:readRange];
-        //        NSString *content = [[NSString alloc]initWithData:contentData encoding:NSUTF8StringEncoding];
-        
         NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:contentData options:NSJSONReadingMutableLeaves error:nil];
         [self handleDataWithDict:dic];
         //将已经操作过的数据移除
@@ -194,7 +169,6 @@ static XHAsyncSocketClient *socketClient=nil;
                 _resultSessionServerBolck(8,contentDic);
             }else if([commandResult intValue] == 9){
                 _resultSessionServerBolck(9,contentDic);
-                [self.sessionServerDelegate searchContacts:contentDic];
             }
         }
             break;
@@ -262,7 +236,7 @@ static XHAsyncSocketClient *socketClient=nil;
     NSData *jsonString = [jsonDic JSONData];
     
     //    NSData *JsonString = [NSJSONSerialization dataWithJSONObject:JsonDic options:NSJSONWritingPrettyPrinted error:&err];  //Json的输入参数必须为NSArray或者NSDictionary
-    NSLog(@"所发送的Json为：%@",[[NSString alloc] initWithData: jsonString encoding:NSUTF8StringEncoding]);
+//    NSLog(@"所发送的Json为：%@",[[NSString alloc] initWithData: jsonString encoding:NSUTF8StringEncoding]);
     
     unsigned int datalength = (unsigned int)jsonString.length;
     unsigned int datatotallength = datalength + 4;

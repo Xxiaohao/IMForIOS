@@ -10,6 +10,8 @@
 #import "XHContactTableViewCell.h"
 #import "XHContactModel.h"
 #import "XHAsyncSocketClient.h"
+#import "XHUserInfo.h"
+#import "YXLDetail.h"
 
 @interface XHContactTableController ()
 
@@ -18,68 +20,29 @@
 
 @implementation XHContactTableController
 
-//-(NSArray *)contacts{
-//    if (!contacts) {
-//        NSMutableArray *array = [NSMutableArray array];
-//        for (int i=0; i<15; i++) {
-//            XHContactModel *model = [[XHContactModel alloc]init];
-//            model.userName = [NSString stringWithFormat:@"张三%d",i];
-//            model.userSignature = [NSString stringWithFormat:@"大江东去%d",i];
-//            [array addObject:model];
-//        }
-//        contacts = array;
-//    }
-//    return contacts;
-//}
-
-//-(NSArray *)contacts{
-//
-//}
-
 -(void)setContacts:(NSArray *)contacts{
-    XHLog(@"---contactTable--");
     NSMutableArray *array = [NSMutableArray array];
     for (NSDictionary *dict in contacts) {
-//        XHLog(@"-----dict------%@-----",dict);
-        
-        if (![dict[@"userID"] isEqualToString:@"184211"]) {
+        if (![dict[@"userID"] isEqualToString:[XHUserInfo sharedXHUserInfo].userID]) {
             XHContactModel *model = [XHContactModel contactWithDict:dict];
+//            XHLog(@"---contactTable--%@",model.userID);
             [array addObject:model];
         }
-        
     }
     _contacts=array;
-    //    self.contacts=array;
-    //    XHLog(@"-----_contacts------%@-----",_contacts);
-    //    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //    [self loadContacts];
+//    self.tableView.contentOffset=CGPointMake(0, 64);
     NSLog(@"contactTable is init");
-    
-    //    [self.view setBackgroundColor:[UIColor blackColor]];
-    
-}
-
-//-(void)loadContacts{
-//    XHLog(@"-----friends---%@-",[XHAsyncSocketClient shareSocketClient].friends);
-//    self.contacts = [XHAsyncSocketClient shareSocketClient].friends;
-//}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSLog(@"count is---- %ld",self.contacts.count);
+//    NSLog(@"count is---- %ld",self.contacts.count);
     return self.contacts.count;
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     XHContactModel *contact = self.contacts[indexPath.row];
@@ -87,14 +50,32 @@
     XHContactTableViewCell *contactCell = [tableView dequeueReusableCellWithIdentifier:ID];
     if (!contactCell) {
         contactCell = [[[NSBundle mainBundle]loadNibNamed:@"XHContactTableViewCell" owner:nil options:nil]firstObject];
-        contactCell.contactModel=contact;
     }
+    contactCell.contactModel=contact;
     return contactCell;
+}
+
+#pragma mark tableView delegate
+/**
+ *  tableViewcell点击
+ */
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    XHContactModel *contact = self.contacts[indexPath.row];
+    NSString *name = contact.userName;
+    YXLDetail *detail = [YXLDetail sharedYXLDetail];
+    [detail setButtonWithNSString:@"发送消息"];
+    detail.title= [NSString stringWithFormat:@"%@的详情",name];
+    detail.contactModel = contact;
+    [self.navigationController pushViewController:detail animated:YES];
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 50;
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
 }
 
 -(void)dealloc{

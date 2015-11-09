@@ -36,12 +36,14 @@
 }
 
 -(void)setContacts:(NSArray *)contacts{
+    XHLog(@" set _contacts ---------------");
     _contacts = contacts;
     self.contactViewController.contacts = self.contacts;
     self.messageViewController.contacts = self.contacts;
 }
 
 -(void)setGroupInfos:(NSArray *)groupInfos{
+    XHLog(@" set _contacts ---------------");
     _groupInfos = groupInfos;
     self.contactViewController.groupInfos = self.groupInfos;
 }

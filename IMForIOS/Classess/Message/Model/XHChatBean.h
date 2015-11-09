@@ -21,7 +21,9 @@
 @property (nonatomic,assign)float AUDIO_SAMPLE_RATE;
 @property (nonatomic,assign)int AUDIO_SAMPLE_SIZE_IN_BITS;
 @property (nonatomic,assign)int AUDIO_CHANNELS;
+
 @property (nonatomic,copy)NSString *headImg;
+@property (nonatomic,assign)BOOL hiddenTime;
 
 -(instancetype)initWithDict:(NSDictionary *)dict;
 +(instancetype)chatWithDict:(NSDictionary *)dict;

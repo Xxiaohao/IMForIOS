@@ -14,8 +14,9 @@
 #import "XHChatBean.h"
 #import "XHDataBaseManager.h"
 #import "XHUserInfo.h"
+#import "YXLDetail.h"
 
-@interface XHMessageViewController ()<MessageViewDelegate>
+@interface XHMessageViewController ()<MessageViewDelegate,YXLDetailDelegate>
 {
     XHMessageClient *messageClient;
 }
@@ -28,37 +29,31 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    //初始化消息容器messagesDict
+    //初始化消息容器
     self.contactsMessages = [NSMutableArray array];
-    self.latestMessageDictionary = [NSMutableDictionary dictionary];
+    self.latestMessageArray = [NSMutableArray array];
     
-    //打开与消息服务器的网络连接
+    //如果沙盒中的msgViewArray为空，则初始化
+    if ([XHUserInfo sharedXHUserInfo].msgViewArray==nil) {
+        [XHUserInfo sharedXHUserInfo].msgViewArray = [NSMutableArray array];
+    }
+    self.latestMessageArray = [XHUserInfo sharedXHUserInfo].msgViewArray;
+    
     messageClient = [XHMessageClient sharedXHMessageClient];
-    [messageClient startConnectSocket];
-    messageClient.allData = [[NSMutableData alloc]init];
     messageClient.messageViewDelegate = self;
-    
+    [YXLDetail sharedYXLDetail].detailDelegate = self;
     [self channelActive];
-    
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    
 }
 
 #pragma mark - Table view data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    XHLog(@"contactsMessages.count is %ld",self.contactsMessages.count);
-    return self.contactsMessages.count;
+    return self.latestMessageArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSMutableArray *messageArrays = self.contactsMessages[indexPath.row];
     XHMessageViewTableCell *viewCell = [XHMessageViewTableCell messageViewCellWithTableView:tableView];
-    
-    NSDictionary *latestMessageDictionary = self.latestMessageDictionary[messageArrays[0][@"senderID"]];
+
+   NSDictionary *latestMessageDictionary =self.latestMessageArray[indexPath.row];
     XHContactModel *contact = [[XHContactModel alloc]init];
     
     //将该cell对应的联系人信息传过去
@@ -70,8 +65,9 @@
         }
     }
     
-    [viewCell setValueWithDic:latestMessageDictionary andContact:contact andCount:messageArrays.count];
+    NSArray *msgsArray = [self getMsgsFromContactsMessagesWithSenderID:latestMessageDictionary[@"senderID"]];
     
+    [viewCell setValueWithDic:latestMessageDictionary andContact:contact andCount:msgsArray.count];
     return viewCell;
 }
 
@@ -80,60 +76,69 @@
     //得到当前cell
     XHMessageViewTableCell *cell = (XHMessageViewTableCell *)[tableView cellForRowAtIndexPath:indexPath];
     cell.count=0;
+
     //准备数据 将cell对应的联系人信息、联系人聊天信息传过去
-    NSMutableArray *msgsArray = self.contactsMessages[indexPath.row];
+    NSDictionary *latestMessageDictionary = self.latestMessageArray[indexPath.row];
+//    NSArray *msgsArray = [self getMsgsFromContactsMessagesWithSenderID:latestMessageDictionary[@"senderID"]];
+//    if (msgsArray==nil) {
+//        msgsArray =[[XHDataBaseManager sharedXHDataBaseManager] readMessageWithSender:latestMessageDictionary[@"senderID"] andCurrentPage:1];
+////        [self.contactsMessages addObject:msgsArray];
+//    }else{
+//        [self.contactsMessages removeObject:msgsArray];
+//    }
     
     XHContactModel *contact = [[XHContactModel alloc]init];
     for (NSDictionary *contactDict in self.contacts) {
         XHContactModel *contactPerson = [XHContactModel contactWithDict:contactDict];
-        if ([msgsArray[0][@"senderID"] isEqualToString:contactPerson.userID]) {
+        if ([latestMessageDictionary[@"senderID"] isEqualToString:contactPerson.userID]) {
             contact = contactPerson;
             break;
         }
     }
-    if (self.messageListController ==nil) {
-        self.messageListController = [XHMessageListController sharedXHMessageListController];
-    }
-    [self.messageListController loadAndHandleDataWithContact:contact andMessageArray:msgsArray];
     
-    //将该联系人的未读消息（unread）全部标志位已读（read）
-    [[XHDataBaseManager sharedXHDataBaseManager] updateMessageWithSender:contact.userID];
-    
-    //    [msgsArray removeObjectsInRange:NSMakeRange(1, msgsArray.count-1)];
-    //    XHLog(@" msgsArray is %@ and msgs == nil  is %d",msgsArray,msgsArray==nil);
-    
+    [self pushToMessageListViewControllerWithContact:contact];
+//    if (self.messageListController ==nil) {
+//        self.messageListController = [XHMessageListController sharedXHMessageListController];
+//    }
+//    //将需要的数据传到messageListController
+//    [self.messageListController loadAndHandleDataWithContact:contact andMessageArray:msgsArray];
+//    
+//    //将该联系人的未读消息（unread）全部标志位已读（read）
+//    [[XHDataBaseManager sharedXHDataBaseManager] updateMessageWithSender:contact.userID];
+//    
+////    [self.contactsMessages removeObject:msgsArray];
+//    [self.latestMessageArray removeObject:latestMessageDictionary];
+//    [self.latestMessageArray insertObject:latestMessageDictionary atIndex:0];
+//
     [self.navigationController pushViewController:self.messageListController animated:YES];
-    
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return 50;
 }
 
-#pragma mark - MessageViewDelegate
-/**
- *将接收到的消息放在messageview里面的dict中
- *如果程序在后台
- */
+#pragma mark - MessageView  Delegate
+/** 将接收到的消息放在messageview里面的contactsMessages中 */
 -(void)showMessageView:(NSDictionary *)dict{
     //程序不在后台
+
     NSUInteger count = self.contactsMessages.count;
     if (self.messageListController==nil) {
         self.messageListController = [XHMessageListController sharedXHMessageListController];
     }
     
-    NSInteger result = [[XHDataBaseManager sharedXHDataBaseManager] insertMessageWithDict:dict andFlag:@"unread"];
-    XHLog(@" result is %ld",result);
+    [[XHDataBaseManager sharedXHDataBaseManager] insertMessageWithDict:dict andFlag:@"unread"];
+    [self latestMessageArrayAddObjectWithDict:dict];
+    
     //判断当前显示的是聊天窗口，并且该聊天窗口就是本条消息的聊天窗口
     if (self.messageListController.view.window!=nil && [self.messageListController.senderID isEqualToString:dict[@"senderID"]]) {
         XHLog(@"正在聊天中");
-        [self.messageListController handleNewMessage:dict];
+        [self.messageListController handleNewMessage:dict AndFlag:@""];
         return;
     }
     
     if (count==0) {
         NSMutableArray *msgsArray = [NSMutableArray array];
-        //        [msgsArray addObject:dict];
         [msgsArray addObject:dict];
         [self.contactsMessages addObject:msgsArray];
     }else{
@@ -152,44 +157,132 @@
             }
         }
     }
-    
-    self.latestMessageDictionary[dict[@"senderID"]] = dict;
-    
     dispatch_async(dispatch_get_main_queue(), ^{
+        [self setUnreadMessagesCount];
         [self.tableView reloadData];
     });
     //程序在后台
 }
 
+#pragma mark - YXLDetailDelegate
+-(void)pushToMessageListViewControllerWithContact:(XHContactModel *)contact{
+//    [[UIApplication sharedApplication] keyWindow].rootViewController = self.navigationController;
+    [self pushToMessageListWithContact:contact];
+}
 
+#pragma mark 抽出会重复使用的方法
+/**从contactsMessages中获取需要的最新消息 */
+-(NSArray *)getMsgsFromContactsMessagesWithSenderID:(NSString *)senderID{
+    for (NSArray *msgs in self.contactsMessages) {
+        if ([msgs[0][@"senderID"] isEqualToString:senderID]) {
+            return msgs;
+        }
+    }
+    return nil;
+}
+
+/**将最新的消息放入latestMessageArray中  */
+-(void)latestMessageArrayAddObjectWithDict:(NSDictionary *)dict{
+    BOOL flag=NO;//用来判断该条消息的发送者是否已经在消息列表中显示着
+    for (NSDictionary *oldDict in self.latestMessageArray) {
+        if ([oldDict[@"senderID"] isEqualToString:dict[@"senderID"]]) {
+            [self.latestMessageArray removeObject:oldDict];
+            [self.latestMessageArray insertObject:dict atIndex:0];
+            flag=YES;
+            break;
+        }
+    }
+    if (!flag) {
+        [self.latestMessageArray insertObject:dict atIndex:0];
+    }
+    [[XHUserInfo sharedXHUserInfo]saveMsgViewArrayInToSanbox];
+}
+
+/**
+ *  在tabBarItem上面显示所有未读消息的条数 badgeValue
+ */
+-(void)setUnreadMessagesCount{
+    NSInteger count = 0 ;
+    for (NSMutableArray *array in self.contactsMessages) {
+        count+=array.count;
+        XHLog(@"未读消息的条数 is %ld",array.count);
+    }
+    if (count==0) {
+        self.tabBarItem.badgeValue = nil;
+    }else if(count>99){
+        self.tabBarItem.badgeValue = @"";
+    }else{
+        self.tabBarItem.badgeValue = [NSString stringWithFormat:@"%ld",count];
+    }
+}
+
+/**
+ *  跳转到messageListViewController的方法 查看详细消息
+ */
+-(void)pushToMessageListWithContact:(XHContactModel *)contact{
+    XHLog(@" contact.userid is %@",contact.userID);
+    for (NSDictionary *latestMessageDictionary in self.latestMessageArray) {
+        if ([latestMessageDictionary[@"senderID"] isEqualToString:contact.userID]) {
+            [self.latestMessageArray removeObject:latestMessageDictionary];
+            [self.latestMessageArray insertObject:latestMessageDictionary atIndex:0];
+            break;
+        }
+    }
+    
+    NSArray *msgsArray = [self getMsgsFromContactsMessagesWithSenderID:contact.userID];
+    if (msgsArray==nil) {
+        msgsArray =[[XHDataBaseManager sharedXHDataBaseManager] readMessageWithSender:contact.userID andCurrentPage:1];
+    }else{
+        [self.contactsMessages removeObject:msgsArray];
+    }
+    
+    if (self.messageListController ==nil) {
+        self.messageListController = [XHMessageListController sharedXHMessageListController];
+    }
+    //将需要的数据传到messageListController
+    [self.messageListController loadAndHandleDataWithContact:contact andMessageArray:msgsArray];
+    //将该联系人的未读消息（unread）全部标志位已读（read）
+    [[XHDataBaseManager sharedXHDataBaseManager] updateMessageWithSender:contact.userID];
+//    [self.navigationController pushViewController:self.messageListController animated:YES];
+}
+
+#pragma mark 登录注销
 /**与消息服务器断开连接 相当于从消息服务器上面注销 */
 -(void)didEndConnectToMessageServer{
     XHLog(@"-----didEndConnectToMessageServer--");
-    NSDictionary *chatBeanDict = [[NSDictionary alloc]initWithObjectsAndKeys:@"184211",@"userID",@"",@"senderID",@"",@"receiverID",@"",@"AUDIO_SAMPLE_RATE",@"",@"AUDIO_SAMPLE_SIZE_IN_BITS",@"",@"AUDIO_CHANNELS",@[],@"msgFlagQueue",@[],@"msgQueue",@"",@"msg",@"",@"indexs",@"",@"time", nil];
-    [messageClient sendingDataWithCommandID:@"130" andCommandResult:@"-1" andCommandContent:chatBeanDict];
+    XHChatBean *chatBean = [[XHChatBean alloc]init];
+    chatBean.userID=[XHUserInfo sharedXHUserInfo].userID;
+    NSMutableDictionary *chatBeanDict = [chatBean keyValues];
+    [messageClient channelINActiveWithCommandContent:[chatBeanDict JSONString]];
 }
 
 /**第一次连接上消息服务器 相当于在消息服务器上面注册 */
 -(void)channelActive{
+    XHLog(@"==============active===========");
     XHChatBean *chatBean = [[XHChatBean alloc]init];
-    chatBean.userID=@"184211";
+    chatBean.userID=[XHUserInfo sharedXHUserInfo].userID;
     NSMutableDictionary *chatBeanDict = [chatBean keyValues];
-    [messageClient sendingDataWithCommandID:@"110" andCommandResult:@"-1" andCommandContent:chatBeanDict];
+    [messageClient channelActiveWithCommandContent:[chatBeanDict JSONString]];
+    //    [messageClient sendingDataWithCommandID:@"110" andCommandResult:@"-1" andCommandContent:chatBeanDict];
 }
 
+-(void)setContacts:(NSArray *)contacts{
+    _contacts = contacts;
+    [self.tableView reloadData];
+}
 
+-(void)viewDidDisappear:(BOOL)animated{
+    [self setUnreadMessagesCount];
+    [self.tableView reloadData];
+}
 
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    
+}
 
-
-
-
-
-
-
-
-
-
-
-
+-(void)dealloc{
+    XHLog(@"---挂了挂了挂了挂了----%s-----",__func__);
+}
 
 @end

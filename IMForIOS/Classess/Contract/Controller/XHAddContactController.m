@@ -10,8 +10,10 @@
 #import "XHAddContactController.h"
 #import "XHContactTableViewCell.h"
 #import "XHContactModel.h"
-#import "XHDetailTableController.h"
+//#import "XHDetailTableController.h"
 #import "XHAsyncSocketClient.h"
+//#import "XYDetail.h"
+#import "YXLDetail.h"
 //#import "XHDetailViewController.h"
 
 
@@ -23,12 +25,12 @@ typedef void(^SearchBlock)(int result,NSDictionary *dict);
 - (void)viewDidLoad{
     [super viewDidLoad];
     
-//    XHContactModel *c = [[XHContactModel alloc]init];
-//    c.userAge=10;
-//    c.userID=@"184211";
-//    NSDictionary *dict =  c.keyValues;
+    //    XHContactModel *c = [[XHContactModel alloc]init];
+    //    c.userAge=10;
+    //    c.userID=@"184211";
+    //    NSDictionary *dict =  c.keyValues;
     
-//    XHContactModel *c2 = [XHContactModel objectWithKeyValues:dict];
+    //    XHContactModel *c2 = [XHContactModel objectWithKeyValues:dict];
     
     //    self.dataList  = [NSArray arrayWithObjects:@"A",@"B",@"C",nil];
     //    NSLog(@"%d", _dataList.count);
@@ -177,40 +179,18 @@ typedef void(^SearchBlock)(int result,NSDictionary *dict);
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // Navigation logic may go here, for example:
     // Create the next view controller.
-    XHLog(@"-----XHaddContactController--选中某个联系人-");
+    XHLog(@"---11--XHaddContactController--选中某个联系人-");
     //   XHContactModel *contact = self.showData[indexPath.row];
     XHContactModel *contact = self.contacts[indexPath.row];
     NSString *name = contact.userName;
-    XHDetailTableController *detailTableController = [[XHDetailTableController alloc]init]; //initWithNibName:nil bundle:nil];
-    //   XHDetailViewController *detailTableController = [[XHDetailViewController alloc]init];
-    detailTableController.title = [NSString stringWithFormat:@"%@的详情",name];
-    detailTableController.contactModel=contact;
-    NSString * userName = [NSString stringWithFormat:@"姓名：%@",[contact userName ] ];
-    NSString * userID = [NSString stringWithFormat:@"账号：%@",[contact userID ] ];
-    NSString * userSex =nil;
-    if(contact.userSex==0){
-        userSex = @"性别：女";
-    }else{
-        userSex = @"性别：男";
-    }
-    //NSString * userSex = [NSString stringWithFormat:@"性别：%@",[contact userSex ] ];
 
-    NSString * userAge = [NSString stringWithFormat:@"年龄：%d岁",[contact userAge ] ];
-
-    NSString * nickName = [NSString stringWithFormat:@"昵称：%@",[contact nickName ] ];
-    NSString * userUnit = [NSString stringWithFormat:@"单位：%@",[contact userUnit ] ];
-    NSString * userDuty = [NSString stringWithFormat:@"职务：%@",[contact userDuty ] ];
-    NSString * userSignature = [NSString stringWithFormat:@"签名：%@",[contact userSignature] ];
-    //   NSString * username = [NSString stringWithFormat:@"姓名：%@",[contactModel nickName ] ];
-    NSArray *myListArray =[[NSArray alloc]initWithObjects:userID,userName,userSex,userAge,nickName,userSignature,userUnit,userDuty, nil];
-    detailTableController.myListArray = myListArray;
-    detailTableController.contactModel=contact;
-    /************需要修改20151020*******/
+    YXLDetail *detail = [[YXLDetail alloc]initWithNibName:@"YXLDetail" bundle:nil];
+    [detail.navigationController setNavigationBarHidden:YES];
+    detail.title= [NSString stringWithFormat:@"%@的详情",name];
+    detail.contactModel = contact;
+    [self.navigationController pushViewController:detail animated:YES];
     
-    //    // Pass the selected object to the new view controller.
-    //
-    //    // Push the view controller.
-    [self.navigationController pushViewController:detailTableController animated:YES];
+  
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText;
@@ -344,21 +324,21 @@ typedef void(^SearchBlock)(int result,NSDictionary *dict);
 //    NSString *commandResult = @"1";
 //    NSString *contactsVersion = @"0";
 //    NSString *msg = txt;
-//    
+//
 //    NSMutableDictionary *JsonDic = [NSMutableDictionary dictionaryWithObjectsAndKeys:command,@"commandID" ,commandResult,@"commandResult",msg,@"commandContent",nil];
-//    
+//
 //    NSData *JsonString = [NSJSONSerialization dataWithJSONObject:JsonDic options:NSJSONWritingPrettyPrinted error:&err];  //Json的输入参数必须为NSArray或者NSDictionary
 //    NSLog(@"所发送的Json为：%@",[[NSString alloc] initWithData: JsonString encoding:NSUTF8StringEncoding]);
-//    
+//
 //    unsigned int datalength = (unsigned int)JsonString.length;
 //    unsigned int datatotallength = datalength + 4;
 //    NSLog(@"传递的数据长度为：%u int的长度为%ld",datalength,sizeof(int));
-//    
+//
 //    uint32_t theInt = htonl((uint32_t)datalength);
 //    uint32_t theTotalInt = htonl((uint32_t)datatotallength);
-//    
+//
 //    //    NSLog(@"---网络theint-%d--本机datalength%ld--theTotalInt---%d---",(uint32_t)datalength,sizeof(theInt),theTotalInt);
-//    
+//
 //    NSData *lengthData = [[NSData alloc] initWithBytes:&theInt length:sizeof(int)];
 //    NSData *lengthTotalData = [[NSData alloc] initWithBytes:&theTotalInt length:sizeof(int)];
 //    NSMutableData *sendingData = [NSMutableData alloc];
@@ -366,7 +346,7 @@ typedef void(^SearchBlock)(int result,NSDictionary *dict);
 //    [sendingData appendData:lengthTotalData];
 //    [sendingData appendData:lengthData];
 //    [sendingData appendData:JsonString];
-//    
+//
 //    //    NSLog(@"发送出的数据为：%@",sendingData);
 //    return sendingData;
 //}

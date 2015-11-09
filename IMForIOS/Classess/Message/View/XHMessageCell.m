@@ -78,24 +78,20 @@
     // 获取数据模型
     XHChatBean *chatBean = messageFrame.chatBean;
     
-    // 分别设置每个子控件的数据 和 frame
-    
     // 设置 "时间Label"的数据 和 frame
     self.lblTime.text = [chatBean.time substringToIndex:19];
     self.lblTime.frame = messageFrame.timeFrame;
 //    self.lblTime.hidden = chatBean.hideTime;
-    
-    
-    
+
     // 设置 头像
     self.imgViewIcon.image = [UIImage imageNamed:messageFrame.chatBean.headImg];
-    XHLog(@"headimg is %@",messageFrame.chatBean.headImg);
     self.imgViewIcon.frame = messageFrame.iconFrame;
     
     
     // 设置消息正文
     [self.btnText setTitle:chatBean.msg forState:UIControlStateNormal];
     self.btnText.frame = messageFrame.textFrame;
+    
     
     
     // 设置正文的背景图

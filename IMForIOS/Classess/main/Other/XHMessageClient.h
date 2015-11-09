@@ -42,5 +42,14 @@ singleton_interface(XHMessageClient);
 -(void)cutOffSocket;
 
 // 发送消息
-- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSDictionary *)commandContent;
+- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSString *)commandContent;
+
+/**第一次连接上消息服务器 相当于在消息服务器上面注册 */
+-(void)channelActiveWithCommandContent:(NSString *)commandContent;
+
+/**与消息服务器断开连接 相当于从消息服务器上面注销 */
+-(void)channelINActiveWithCommandContent:(NSString *)commandContent;
+
+
+
 @end

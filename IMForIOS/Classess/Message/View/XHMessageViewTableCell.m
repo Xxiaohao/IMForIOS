@@ -25,20 +25,21 @@
     _count = count;
     if (_count==0) {
         self.msgCount.text = @"";
+    }else{
+        self.msgCount.text = [NSString stringWithFormat:@"%ld",count];
     }
 }
 
 -(void)setValueWithDic:(NSDictionary *)latestMessageDict andContact:(XHContactModel *)contact andCount:(NSInteger)count{
-    XHLog(@"dict is %@",latestMessageDict);
-    _count = count;
+    XHLog(@"dict is %ld",count);
+//    _count = count;
+    self.count = count;
     _latestMessageDict = latestMessageDict;
     _contact = contact;
     self.headImage.image = [UIImage imageNamed:[NSString stringWithFormat:@"%03d",_contact.upheadspe]];
     self.userName.text = _contact.userName;
     self.msgTime.text = [_latestMessageDict[@"time"] substringWithRange:NSMakeRange(5, 11)];
-    self.msgCount.text = [NSString stringWithFormat:@"%ld",count];
     self.msg.text = _latestMessageDict[@"msg"];
-    XHLog(@"msg is %@",_latestMessageDict[@"msg"]);
 }
 
 +(instancetype)messageViewCellWithTableView :(UITableView *)tableView{
@@ -50,19 +51,13 @@
     return messageViewCell;
 }
 
-
-
-
-
 - (void)awakeFromNib {
     // Initialization code
 }
 
-
-
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-    XHLog(@"--------tableviewCell is selected-----------");
+//    XHLog(@"--------tableviewCell is selected-----------");
     // Configure the view for the selected state
 }
 

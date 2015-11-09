@@ -124,7 +124,7 @@ static XHMessageClient *messageClient=nil;
 - (void)onSocket:(AsyncSocket *)sock didWriteDataWithTag:(long)tag
 {
     NSLog(@"消息发送成功");
-    [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
+//    [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
 }
 
 //接受消息成功之后回调
@@ -170,7 +170,6 @@ static XHMessageClient *messageClient=nil;
     switch ([commandID intValue]) {
         case 120:
         {
-//            XHLog(@"--message--%@--",contentDic);
             [self.messageViewDelegate showMessageView:contentDic];
         }
             break;
@@ -193,19 +192,37 @@ static XHMessageClient *messageClient=nil;
     }
 }
 
+#pragma mark 用户方法
+-(void)channelActiveWithCommandContent:(NSString *)commandContent{
+    //打开与消息服务器的网络连接
+    XHLog(@"active---------------------");
+    [self cutOffSocket];
+    self.socket.userData = SocketOfflineByServer;
+    [self startConnectSocket];
+    self.allData = [[NSMutableData alloc]init];
+    
+    [self sendingDataWithCommandID:@"110" andCommandResult:@"-1" andCommandContent:commandContent];
+    [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
+}
+
+-(void)channelINActiveWithCommandContent:(NSString *)commandContent{
+    [self sendingDataWithCommandID:@"130" andCommandResult:@"-1" andCommandContent:commandContent];
+}
+
+
+
 /**
  *对要发送的数据进行封装再发送
  */
-- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSDictionary *)commandContent{
-    NSError *err = nil;
+- (void)sendingDataWithCommandID:(NSString *)commandID andCommandResult :(NSString *)commandResult andCommandContent:(NSString *)commandContent{
     NSMutableDictionary *jsonDic = [NSMutableDictionary dictionaryWithObjectsAndKeys:commandID,@"commandID" ,commandResult,@"commandResult",commandContent,@"commandContent",nil];
 //    NSData *JsonString = [NSJSONSerialization dataWithJSONObject:JsonDic options:NSJSONWritingPrettyPrinted error:&err];  //Json的输入参数必须为NSArray或者NSDictionary
     NSData *jsonString = [jsonDic JSONData];
-    NSLog(@"所发送的Json为：%@",[[NSString alloc] initWithData: jsonString encoding:NSUTF8StringEncoding]);
+//    NSLog(@"所发送的Json为：%@",jsonDic);
     
     unsigned int datalength = (unsigned int)jsonString.length;
     unsigned int datatotallength = datalength + 4;
-    NSLog(@"传递的数据长度为：%u int的长度为%ld",datalength,sizeof(int));
+//    NSLog(@"传递的数据长度为：%u int的长度为%ld",datalength,sizeof(int));
     
     uint32_t theInt = htonl((uint32_t)datalength);
     uint32_t theTotalInt = htonl((uint32_t)datatotallength);

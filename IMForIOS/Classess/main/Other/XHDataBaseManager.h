@@ -24,7 +24,7 @@ singleton_interface(XHDataBaseManager);
 -(NSInteger)updateMessageWithSender:(NSString *)senderID;
 
 /**读取msgs表中的消息数据 */
--(NSMutableArray *)readMessageWithSender:(NSString *)senderID;
+-(NSMutableArray *)readMessageWithSender:(NSString *)senderID andCurrentPage:(NSInteger)currentPage;
 
 
 @end

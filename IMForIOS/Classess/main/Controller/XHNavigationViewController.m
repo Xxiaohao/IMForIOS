@@ -25,6 +25,7 @@
     textAttrs[NSForegroundColorAttributeName] = [UIColor orangeColor];
     textAttrs[NSFontAttributeName] = [UIFont systemFontOfSize:13];
     [item setTitleTextAttributes:textAttrs forState:UIControlStateNormal];
+//    [item setTitleTextAttributes:textAttrs forState:UIControlStateSelected];
     
     // 设置不可用状态
     NSMutableDictionary *disableTextAttrs = [NSMutableDictionary dictionary];
@@ -32,6 +33,9 @@
     
     disableTextAttrs[NSFontAttributeName] = [UIFont systemFontOfSize:13];
     [item setTitleTextAttributes:disableTextAttrs forState:UIControlStateDisabled];
+    
+    [[UINavigationBar appearance] setTitleTextAttributes:[[NSDictionary alloc]initWithObjectsAndKeys:[UIColor orangeColor],NSForegroundColorAttributeName, nil]];
+    
 }
 
 

@@ -21,6 +21,8 @@ MJExtensionLogAllProperties
         self.indexs = dict[@"indexs"];
         self.msg = dict[@"msg"];
         self.time = dict[@"time"];
+        self.msgFlagQueue = dict[@"msgFlagQueue"];
+        self.msgQueue = dict[@"msgQueue"];
 //        [self setValuesForKeysWithDictionary:dict];
     }
     return self;

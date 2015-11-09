@@ -28,6 +28,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+//    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:20/255.0 green:155/255.0 blue:213/255.0 alpha:1]];
+//    [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],UITextAttributeTextColor,nil]];
 //    [self addContactTable];
     self.navigationItem.rightBarButtonItem=[[UIBarButtonItem alloc]initWithTitle:@"添加" style:UIBarButtonItemStylePlain target:self action:@selector(addContacts)];
     //segmentedControl
@@ -47,23 +49,23 @@
         self.selectViewController=self.childViewControllers[index];
         _selectIndex = index;
         
-        XHLog(@"frame is %@ ",NSStringFromCGRect(self.selectViewController.view.frame));
+        XHLog(@"frame is %@ and self.view.frame is %@",NSStringFromCGRect(self.selectViewController.view.frame),NSStringFromCGRect(self.view.frame));
     }];
 }
 
 /** 增加子控制器*/
 -(void)addContactTable{
-    CGRect navigationBarFrame = self.navigationController.navigationBar.frame;
-    CGRect tabBarFrame = self.tabBarController.tabBar.frame;
-    CGRect subViewFrame = CGRectMake(0, navigationBarFrame.size.height+20, navigationBarFrame.size.width, tabBarFrame.origin.y-navigationBarFrame.size.height-20);
+//    CGRect navigationBarFrame = self.navigationController.navigationBar.frame;
+//    CGRect tabBarFrame = self.tabBarController.tabBar.frame;
+//    CGRect subViewFrame = CGRectMake(0, navigationBarFrame.size.height+20, navigationBarFrame.size.width, tabBarFrame.origin.y-navigationBarFrame.size.height-20);
     
     self.groupTableController  = [[XHGroupTableController alloc]init];
-    self.groupTableController.view.frame = subViewFrame;
+    self.groupTableController.view.frame = self.view.frame;
     [self.view addSubview:self.groupTableController.view];
     [self addChildViewController:self.groupTableController];
     
     self.contactTableController  = [[XHContactTableController alloc]init];
-    self.contactTableController.view.frame = self.groupTableController.view.frame;
+    self.contactTableController.view.frame = self.view.frame;
     [self.view addSubview:self.contactTableController.view];
     [self addChildViewController:self.contactTableController];
     
