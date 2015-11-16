@@ -19,7 +19,7 @@ enum{
 
 @protocol MessageViewDelegate <NSObject>
 
--(void)showMessageView:(NSDictionary *)dict;
+-(void)showMessageView:(NSMutableDictionary *)dict;
 -(void)didEndConnectToMessageServer;
 
 @end

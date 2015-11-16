@@ -15,6 +15,7 @@
 #import "XHDataBaseManager.h"
 #import "XHUserInfo.h"
 #import "YXLDetail.h"
+#import "TYImageCache.h"
 
 @interface XHMessageViewController ()<MessageViewDelegate,YXLDetailDelegate>
 {
@@ -119,7 +120,7 @@
 
 #pragma mark - MessageView  Delegate
 /** 将接收到的消息放在messageview里面的contactsMessages中 */
--(void)showMessageView:(NSDictionary *)dict{
+-(void)showMessageView:(NSMutableDictionary *)dict{
     //程序不在后台
 
     NSUInteger count = self.contactsMessages.count;
@@ -127,32 +128,60 @@
         self.messageListController = [XHMessageListController sharedXHMessageListController];
     }
     
-    [[XHDataBaseManager sharedXHDataBaseManager] insertMessageWithDict:dict andFlag:@"unread"];
-    [self latestMessageArrayAddObjectWithDict:dict];
+    NSString *msg = @"";
+    NSString *indexs = @"";
+    //图片写本地
+    XHChatBean *chatBean = [XHChatBean objectWithKeyValues:dict];
+    for (int i=0; i<chatBean.msgFlagQueue.count; i++) {
+        if ([chatBean.msgFlagQueue[i] intValue]==0) {
+            NSString *text = chatBean.msgQueue[i];
+            msg = [msg stringByAppendingString:text];
+            indexs = [indexs stringByAppendingString:[NSString stringWithFormat: @"0%ld,",text.length]];
+        }else if ([chatBean.msgFlagQueue[i] intValue]==1) {
+            CGFloat time = [[NSDate date]timeIntervalSince1970];
+            NSString *timeString = [[NSString stringWithFormat:@"%f",time] stringByReplacingOccurrencesOfString:@"." withString:@""];
+            NSString *name = [timeString stringByAppendingString:[NSString stringWithFormat:@"%d.png",arc4random_uniform(1000)]];
+            UIImage *img = [UIImage imageWithData:[[NSData alloc]initWithBase64EncodedString:dict[@"msgQueue"][i] options:0]];
+            BOOL b = [[TYImageCache cache] saveImageFromName:name image:img];
+            XHLog(@"---b--is %d---",b);
+            msg = [msg stringByAppendingString:name];
+            indexs = [indexs stringByAppendingString:[NSString stringWithFormat: @"1%ld,",name.length]];
+        }
+    }
+        XHLog(@" dict is %@",dict);
+    
+    //消息写库
+    chatBean.msg = msg;
+    chatBean.indexs = indexs;
+    NSDictionary * dictionary = chatBean.keyValues;
+    [[XHDataBaseManager sharedXHDataBaseManager] insertMessageWithDict:dictionary andFlag:@"unread"];
+    
+    //使用最新的dict更新latestMessageArray
+    [self latestMessageArrayAddObjectWithDict:dictionary];
     
     //判断当前显示的是聊天窗口，并且该聊天窗口就是本条消息的聊天窗口
-    if (self.messageListController.view.window!=nil && [self.messageListController.senderID isEqualToString:dict[@"senderID"]]) {
+    if (self.messageListController.view.window!=nil && [self.messageListController.senderID isEqualToString:dictionary[@"senderID"]]) {
         XHLog(@"正在聊天中");
-        [self.messageListController handleNewMessage:dict AndFlag:@""];
+        [self.messageListController handleNewMessage:dictionary AndFlag:@""];
         return;
     }
     
     if (count==0) {
         NSMutableArray *msgsArray = [NSMutableArray array];
-        [msgsArray addObject:dict];
+        [msgsArray addObject:dictionary];
         [self.contactsMessages addObject:msgsArray];
     }else{
         for (int i =0; i<count; i++) {
             NSMutableArray *msgsArray = self.contactsMessages[i];
             XHChatBean *chatBean = [XHChatBean chatWithDict:msgsArray[0]];
-            if ([chatBean.senderID isEqualToString:dict[@"senderID"]]) {
-                [msgsArray addObject:dict];
+            if ([chatBean.senderID isEqualToString:dictionary[@"senderID"]]) {
+                [msgsArray addObject:dictionary];
                 break;
             }
             if (i==count-1) {
                 NSMutableArray *msgsArray = [NSMutableArray array];
-                [msgsArray addObject:dict];
-                //                [msgsArray addObject:dict];
+                [msgsArray addObject:dictionary];
+
                 [self.contactsMessages addObject:msgsArray];
             }
         }
@@ -220,7 +249,7 @@
  *  跳转到messageListViewController的方法 查看详细消息
  */
 -(void)pushToMessageListWithContact:(XHContactModel *)contact{
-    XHLog(@" contact.userid is %@",contact.userID);
+//    XHLog(@" contact.userid is %@",contact.userID);
     for (NSDictionary *latestMessageDictionary in self.latestMessageArray) {
         if ([latestMessageDictionary[@"senderID"] isEqualToString:contact.userID]) {
             [self.latestMessageArray removeObject:latestMessageDictionary];

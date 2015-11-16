@@ -14,6 +14,7 @@
 // 为自定义单元格增加一个frame 模型属性
 @property (nonatomic, strong) XHMessageFrame *messageFrame;
 
+@property (nonatomic, copy) NSString *headImage;
 
 // 封装一个创建自定义Cell的方法
 + (instancetype)messageCellWithTableView:(UITableView *)tableView;

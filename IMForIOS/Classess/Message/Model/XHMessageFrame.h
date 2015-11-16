@@ -25,6 +25,8 @@
 // 正文的frame
 @property (nonatomic, assign, readonly) CGRect textFrame;
 
+@property (nonatomic,strong) NSMutableArray *subContentArray;
+
 // 行高
 @property (nonatomic, assign, readonly) CGFloat rowHeight;
 

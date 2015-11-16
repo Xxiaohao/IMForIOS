@@ -16,7 +16,7 @@ singleton_interface(XHMessageListController)
 @property (nonatomic,strong) NSMutableArray *messageFrames;
 @property (nonatomic,strong) XHContactModel *contactPerson;
 @property (nonatomic,strong) NSString *senderID;
-@property (nonatomic,strong) NSString *visible;
+//@property (nonatomic,strong) NSString *visible;
 
 //对接收到的消息进行处理
 -(void)handleNewMessage:(NSDictionary *)dict AndFlag:(NSString *)flag;

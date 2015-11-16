@@ -30,7 +30,7 @@
 #define READ_TIME_OUT -1
 //设置写入超时 -1 表示不会使用超时
 #define WRITE_TIME_OUT -1
-#define MAX_BUFFER 10*1024
+#define MAX_BUFFER 10*10*1024
 //通信协议SESSION_SERVER
 #define LOGIN_SECCUSS 4
 #define CONTACTS_INFO 8

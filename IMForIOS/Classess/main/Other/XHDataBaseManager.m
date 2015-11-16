@@ -10,7 +10,7 @@
 #import "XHChatBean.h"
 #import "XHUserInfo.h"
 
-#define PageCount 5
+#define PageCount 2
 
 //@end
 
@@ -79,7 +79,7 @@ singleton_implementation(XHDataBaseManager)
 /**read  读取msgs表中的消息数据 */
 -(NSMutableArray *)readMessageWithSender:(NSString *)senderID andCurrentPage:(NSInteger)currentPage{
     NSMutableArray *historyMsgsArray = [NSMutableArray array];
-    XHLog(@" senderID is %@  %@   %@",senderID,[NSString stringWithFormat:@"%d",PageCount],[NSString stringWithFormat:@"%ld",(currentPage-1)*PageCount]);
+//    XHLog(@" senderID is %@  %@   %@",senderID,[NSString stringWithFormat:@"%d",PageCount],[NSString stringWithFormat:@"%ld",(currentPage-1)*PageCount]);
     NSString *userID =[XHUserInfo sharedXHUserInfo].userID;
     if ([[XHDataBaseManager sharedXHDataBaseManager].db open]) {
         FMResultSet *rs = [[XHDataBaseManager sharedXHDataBaseManager].db executeQuery:@"select * from( select * from msgs where userid = ? and ((senderID = ? and receiverID=?) or (senderID = ? and receiverID=?)) order by time desc limit ? offset ?) order by time asc",userID,senderID,userID,userID,senderID,[NSString stringWithFormat:@"%d",PageCount],[NSString stringWithFormat:@"%ld",(currentPage-1)*PageCount]];
@@ -87,7 +87,7 @@ singleton_implementation(XHDataBaseManager)
         while ([rs next]) {
             NSDictionary *dict = [rs resultDictionary];
             [historyMsgsArray addObject:dict];
-            XHLog(@"--------------------------------msgs dict is %@",dict[@"time"]);
+            XHLog(@"--------------------------------msgs dict is %@",dict);
         }
         [rs close];
     }

@@ -68,7 +68,7 @@ static XHMessageClient *messageClient=nil;
 {
     //这是异步返回的连接成功，
     NSLog(@"didConnectToMessageServerHost %@：%d",host,port);
-    [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
+//    [self.socket readDataWithTimeout:READ_TIME_OUT buffer:self.allData bufferOffset:self.allData.length maxLength:MAX_BUFFER tag:0];
     
     //    //通过定时器不断发送消息，来检测长连接
     //    self.heartTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(checkLongConnectByServe) userInfo:nil repeats:YES];
@@ -130,6 +130,7 @@ static XHMessageClient *messageClient=nil;
 //接受消息成功之后回调
 - (void)onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
+    XHLog(@"-----self.allData.length is %ld------",self.allData.length);
     if (self.allData.length >8) {
         [self handleBufferData];
     }
@@ -141,7 +142,7 @@ static XHMessageClient *messageClient=nil;
     NSInteger contentDataNetLength;
     memcpy(&contentDataNetLength, [contentData bytes], sizeof(int));
     NSInteger contentDataLocalLength = ntohl(contentDataNetLength);
-
+    NSLog(@"--self.allData.length is -2--%ld--contentDataLength-%ld-",self.allData.length,contentDataLocalLength);
     if(self.allData.length>=(contentDataLocalLength+8)){
         NSRange readRange = NSMakeRange(8, contentDataLocalLength);
         NSData *contentData = [self.allData subdataWithRange:readRange];
@@ -165,7 +166,7 @@ static XHMessageClient *messageClient=nil;
     NSString *commandContent= [dic objectForKey:@"commandContent"];
     NSString *commandID = [dic objectForKey:@"commandID"];
     NSString *commandResult = [dic objectForKey:@"commandResult"];
-    NSDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:[commandContent dataUsingEncoding:NSUTF8StringEncoding ] options:NSJSONReadingMutableLeaves error:nil];
+    NSMutableDictionary *contentDic = [NSJSONSerialization JSONObjectWithData:[commandContent dataUsingEncoding:NSUTF8StringEncoding ] options:NSJSONReadingMutableLeaves error:nil];
     XHLog(@"-------result is %@----",commandResult);
     switch ([commandID intValue]) {
         case 120:

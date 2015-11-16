@@ -22,6 +22,7 @@
 #import "Masonry.h"
 
 #define TextMsg @"0"
+#define ImageMsg @"1"
 
 @interface XHMessageListController ()<UITableViewDataSource,UITableViewDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *voice;
@@ -36,6 +37,9 @@
 @property (weak, nonatomic) IBOutlet UIView *operateView;
 @property (weak, nonatomic) IBOutlet UIView *featureView;
 @property (nonatomic,assign) NSInteger flag;
+@property (nonatomic,copy) NSString *imgName;
+@property (nonatomic,strong) UIImage *img;
+@property (nonatomic,strong) UIViewController *previewController;
 
 - (IBAction)clickFeature;
 
@@ -49,11 +53,9 @@ singleton_implementation(XHMessageListController)
     self.currentPage = 1;
     self.messageFrames = [NSMutableArray array];
     self.messages = [NSMutableArray array];
-    XHLog(@"111contact.userid is %@",contact.userID);
     _contactPerson = contact;
     for (NSDictionary *dict in messageArray) {
         [self handleNewMessage:dict AndFlag:@""];
-        //        [self.messages addObject:dict];
     }
     self.title = self.contactPerson.userName;
     [self.msgTableView reloadData];
@@ -68,14 +70,43 @@ singleton_implementation(XHMessageListController)
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //    XHLog(@"messagelist load");
-    // 取消分割线
+    
+    //设置inputView里面的子控件
+    [self setInputViewSubView];
+    
+    //上拉刷新
+    [self setUpRefresh];
+    
+    //增加各种功能的图标、事件等
+    [self loadFeatures];
+    
+    // 监听键盘的弹出事件 创建一个NSNotificationCenter对象。
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    // 监听键盘的弹出通知
+    [center addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
+}
+
+/**
+ *  对inputView里面的子控件做一些处理
+ */
+-(void)setInputViewSubView{
+    //不显示分割线
     self.msgTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     // 设置UITableView的背景色
     self.msgTableView.backgroundColor = [UIColor colorWithRed:236 / 255.0 green:236 / 255.0 blue:236 / 255.0 alpha:1.0];
     // 设置UITableView的行不允许被选中
     self.msgTableView.allowsSelection = NO;
-    
+    // 设置文本框最左侧有一段间距
+    UIView *leftVw = [[UIView alloc] init];
+    leftVw.frame = CGRectMake(0, 0, 5, 1);
+    self.inputText.leftView = leftVw;
+    self.inputText.leftViewMode = UITextFieldViewModeAlways;
+}
+
+/**
+ *  集成上拉刷新
+ */
+-(void)setUpRefresh{
     MJRefreshNormalHeader *header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadMoreMessage)];
     [header setTitle:@"下拉加载更多消息" forState:MJRefreshStateIdle];
     [header setTitle:@"松开加载更多消息" forState:MJRefreshStatePulling];
@@ -86,23 +117,12 @@ singleton_implementation(XHMessageListController)
     // 设置字体
     header.stateLabel.font = [UIFont systemFontOfSize:13];
     header.lastUpdatedTimeLabel.font = [UIFont systemFontOfSize:13];
-    
     self.msgTableView.header= header;
-    
-    // 设置文本框最左侧有一段间距
-    UIView *leftVw = [[UIView alloc] init];
-    leftVw.frame = CGRectMake(0, 0, 5, 1);
-    self.inputText.leftView = leftVw;
-    self.inputText.leftViewMode = UITextFieldViewModeAlways;
-    
-    [self loadFeatures];
-    
-    // 监听键盘的弹出事件 创建一个NSNotificationCenter对象。
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    // 监听键盘的弹出通知
-    [center addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
 }
 
+/**
+ *  加载更多消息
+ */
 -(void)loadMoreMessage{
     self.currentPage++;
     [self.messageFrames removeAllObjects];
@@ -153,70 +173,110 @@ singleton_implementation(XHMessageListController)
     }
     [self hiddenTimeWithChatBean:chatModel];
     messageFrame.chatBean = chatModel;
-    // 把frame 模型加到arrayModels
+    // 把frame模型加到arrayModels
     if (![flag isEqualToString:@"history"]) {
         [self.messages addObject:dict];
     }
     [self.messageFrames addObject:messageFrame];
-    
     [self.msgTableView reloadData];
 }
 
 #pragma mark 发送消息
 // 当键盘上的return键被单击的时候触发
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
+- (void)textFieldShouldReturn:(UITextField *)textField
 {
     // 1. 获取用户输入的文本
     NSString *text = textField.text;
-    if (text ==nil || [text isEqualToString:@""]) {
-        return 0;
+    if (text ==nil || [text isEqualToString:@""] || text.length>300) {
+        return ;
     }
-    if(text.length>300){
-        XHLog(@"您发送的数据过多！");
+//    if(text.length>300){
+//        XHLog(@"您发送的数据过多！");
+//        return ;
+//    }
+    
+    //发送文本消息
+    [self sendMsgWithFlag:TextMsg andContent:text];
+    
+    // 清空文本框
+    textField.text = nil;
+}
+
+/**
+ *  发送图片
+ */
+-(void)sendPic{
+    
+    //给图片去一个唯一的名字，然后存入本地
+    CGFloat time = [[NSDate date]timeIntervalSince1970];
+    NSString *timeString = [[NSString stringWithFormat:@"%f",time] stringByReplacingOccurrencesOfString:@"." withString:@""];
+    NSString *name = [timeString stringByAppendingString:[NSString stringWithFormat:@"%d.png",arc4random_uniform(1000)]];
+    [[TYImageCache cache] saveImageFromName:name image:self.img];
+    self.imgName = name;
+    
+    //将image变成data  然后通过base64转成string
+    NSData *data;
+    if (UIImagePNGRepresentation(self.img) == nil) {
+        data = UIImageJPEGRepresentation(self.img, 1);
+        XHLog(@"-----JPEG--data.length is %ld---",data.length);
+    } else {
+        data = UIImagePNGRepresentation(self.img);
+        XHLog(@"-----png--data.length is %ld---",data.length);
     }
+    NSString *imgString =  [data base64EncodedStringWithOptions:0];
+    
+    UIViewController * viewController = [self.previewController.navigationController.viewControllers firstObject];
+    [viewController dismissViewControllerAnimated:YES completion:nil];
+
+    //发送消息
+    [self sendMsgWithFlag:ImageMsg andContent:imgString];
+}
+
+/** 发送消息详细处理 */
+-(void)sendMsgWithFlag:(NSString *)flag andContent:(NSString *)content{
     //创建消息对象、消息字典
     XHChatBean *chatBean = [[XHChatBean alloc]init];
     chatBean.senderID = [XHUserInfo sharedXHUserInfo].userID;
     chatBean.receiverID = self.contactPerson.userID;
     NSMutableArray *msgFalgQueue = [NSMutableArray array];
-    [msgFalgQueue addObject:TextMsg];
+    [msgFalgQueue addObject:flag];
     NSMutableArray *msgQueue = [NSMutableArray array];
-    [msgQueue addObject:text];
+    [msgQueue addObject:content];
     chatBean.msgFlagQueue = msgFalgQueue;
     chatBean.msgQueue = msgQueue;
-    chatBean.msg = text;
-    
+    if ([flag isEqualToString:TextMsg]) {
+        chatBean.msg = content;
+        chatBean.indexs = [NSString stringWithFormat:@"0%ld,",content.length];
+    }else if ([flag isEqualToString:ImageMsg]){
+        chatBean.msg = self.imgName;
+        chatBean.indexs = [NSString stringWithFormat:@"1%ld,",self.imgName.length];
+    }
     NSDateFormatter *format = [[NSDateFormatter alloc]init];
     format.dateFormat = @"yyyy-MM-dd HH:mm:ss";
     NSString *time = [format stringFromDate:[NSDate date]];
-    //    XHLog(@"11111111time is %@ and dd is %@",time,[NSDate date]);
     chatBean.time =time;
-    
-    NSDictionary *chatBeanDict = chatBean.keyValues;
-    
-    [self.messages addObject:chatBeanDict];
-    //将消息插入数据库
-    [[XHDataBaseManager sharedXHDataBaseManager]insertMessageWithDict:chatBeanDict andFlag:@"read"];
-    //    XHLog(@" 消息发送成功 is %ld ",result);
+    [self hiddenTimeWithChatBean:chatBean];
+    chatBean.headImg = [NSString stringWithFormat:@"%03d", [XHUserInfo sharedXHUserInfo].upheadspe];
     
     //设置消息的frame并放入自己的聊天页面中显示
     XHMessageFrame *messageFrame = [[XHMessageFrame alloc]init];
-    chatBean.headImg = [NSString stringWithFormat:@"%03d", [XHUserInfo sharedXHUserInfo].upheadspe];
-    [self hiddenTimeWithChatBean:chatBean];
     messageFrame.chatBean = chatBean;
     [self.messageFrames addObject:messageFrame];
     
-    [[XHMessageClient sharedXHMessageClient]sendingDataWithCommandID:PERSON_TO_PERSON_MESSAGE andCommandResult:@"-1" andCommandContent:[chatBeanDict JSONString]];
+    NSDictionary *chatBeanDict = chatBean.keyValues;
+    [self.messages addObject:chatBeanDict];
     
-    // 清空文本框
-    textField.text = nil;
+    //发送
+    [[XHMessageClient sharedXHMessageClient]sendingDataWithCommandID:PERSON_TO_PERSON_MESSAGE andCommandResult:@"-1" andCommandContent:[chatBeanDict JSONString]];
+    //将消息插入数据库
+    [[XHDataBaseManager sharedXHDataBaseManager]insertMessageWithDict:chatBeanDict andFlag:@"read"];
+    
     // 刷新UITableView的数据
     [self.msgTableView reloadData];
     
     // 把最后一行滚动到最上面
     NSIndexPath *idxPath = [NSIndexPath indexPathForRow:self.messageFrames.count - 1 inSection:0];
     [self.msgTableView scrollToRowAtIndexPath:idxPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-    return YES;
 }
 
 - (void)keyboardWillChangeFrame:(NSNotification *)noteInfo
@@ -252,6 +312,7 @@ singleton_implementation(XHMessageListController)
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     XHMessageFrame *messageFrame = self.messageFrames[indexPath.row];
     XHMessageCell *chatBeanCell = [XHMessageCell messageCellWithTableView:tableView];
+    chatBeanCell.headImage = [NSString stringWithFormat:@"%03d", self.contactPerson.upheadspe];
     chatBeanCell.messageFrame = messageFrame;
     return chatBeanCell;
 }
@@ -259,6 +320,7 @@ singleton_implementation(XHMessageListController)
 #pragma mark -Table view delegate
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     [self.view endEditing:YES];
+    self.featureViewHeight.constant = 0;
     
 }
 
@@ -267,18 +329,9 @@ singleton_implementation(XHMessageListController)
     return messageFrame.rowHeight;
 }
 
-// ******** 注意: 监听通知以后一定要在监听通知的对象的dealloc方法中移除监听 **********/.
-- (void)dealloc
-{
-    // 移除通知
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
+/**
+ *  加上其他的各种功能、例如语音消息、图片
+ */
 -(void)loadFeatures{
     NSArray *featureIcons = @[@"location",@"microphone",@"phoneshake",@"photos",@"record_begin_button"];
     NSArray *featureTexts = @[@"位置",@"语音",@"抖动",@"照片",@"待定"];
@@ -301,7 +354,6 @@ singleton_implementation(XHMessageListController)
         
         [self.featureView addSubview:featureIcon];
     }
-    //    return featureView;
 }
 
 -(void)featureAction:(UIButton *)sender{
@@ -325,11 +377,12 @@ singleton_implementation(XHMessageListController)
     }
 }
 
+/**
+ *  选择图片
+ */
 -(void)pickImg{
     UIImagePickerController *imgPickerController = [[UIImagePickerController alloc]init];
     imgPickerController.delegate = self;
-//    imgPickerController.title = @"图片选择";
-//    imgPickerController.allowsEditing = YES;
     imgPickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     [self presentViewController:imgPickerController animated:YES completion:nil];
     
@@ -338,17 +391,18 @@ singleton_implementation(XHMessageListController)
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
     XHLog(@" info is %@",info);
     UIImage *img = info[UIImagePickerControllerOriginalImage];
-    UIViewController *viewController = [[UIViewController alloc]init];
-    viewController.view.backgroundColor = [UIColor  whiteColor];
+    self.previewController = [[UIViewController alloc]init];
+    self.previewController.view.backgroundColor = [UIColor  whiteColor];
     UIImageView *imgView = [[UIImageView alloc]init];
 //    CGSize imgSize = img.size;
 //    XHLog(@" size is %@",NSStringFromCGSize(imgSize));
-//    BOOL b = [[TYImageCache cache] saveImageFromName:[NSString stringWithFormat:@"%d.png",arc4random_uniform(1000)] image:img];
-//    XHLog(@"---b--is %d---",b);
+    
     CGSize previewSize = CGSizeZero;
-    if (img.size.width>viewController.view.frame.size.width||img.size.height>viewController.view.frame.size.height) {
-        CGFloat scaleWidth = img.size.width/viewController.view.frame.size.width;
-        CGFloat scaleHeight = img.size.height/viewController.view.frame.size.height;
+    CGFloat viewHeight =self.previewController.view.frame.size.height-64;
+    CGFloat viewWidth = self.previewController.view.frame.size.width;
+    if (img.size.width>viewWidth||img.size.height>viewHeight) {
+        CGFloat scaleWidth = img.size.width/viewWidth;
+        CGFloat scaleHeight = img.size.height/viewHeight;
         if (scaleWidth>scaleHeight) {
             previewSize = CGSizeMake(img.size.width/scaleWidth, img.size.height/scaleWidth);
         }else{
@@ -357,15 +411,20 @@ singleton_implementation(XHMessageListController)
     }else{
         previewSize = img.size;
     }
-    CGFloat imgViewY = (viewController.view.frame.size.height-previewSize.height)/2;
-    CGFloat imgViewX = (viewController.view.frame.size.width-previewSize.width)/2;
+    CGFloat imgViewY = (viewHeight-previewSize.height)/2+64;
+    CGFloat imgViewX = (viewWidth-previewSize.width)/2;
     imgView.frame = CGRectMake(imgViewX, imgViewY, previewSize.width, previewSize.height);
     imgView.image = img;
-    [viewController.view addSubview:imgView];
-    [picker pushViewController:viewController animated:YES];
-//    [self dismissViewControllerAnimated:YES completion:nil];
+    self.img = imgView.image;
+
+    UIBarButtonItem *barButtonItem =[[UIBarButtonItem alloc]initWithTitle:@"确定" style:UIBarButtonItemStyleDone target:self action:@selector(sendPic)];
+    self.previewController.navigationItem.rightBarButtonItem =barButtonItem ;
+    
+    [self.previewController.view addSubview:imgView];
+    [picker pushViewController:self.previewController animated:YES];
     
 }
+
 
 #pragma mark 控件点击事件
 - (IBAction)clickFeature {
@@ -376,6 +435,18 @@ singleton_implementation(XHMessageListController)
         self.featureViewHeight.constant = 200;
     }
 }
+
+// ******** 注意: 监听通知以后一定要在监听通知的对象的dealloc方法中移除监听 **********/.
+- (void)dealloc
+{
+    // 移除通知
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+}
+
 
 
 @end
