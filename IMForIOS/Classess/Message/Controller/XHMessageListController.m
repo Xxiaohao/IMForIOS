@@ -20,6 +20,7 @@
 #import "MJRefresh.h"
 #import "TYImageCache.h"
 #import "Masonry.h"
+#import "XHEmotionListView.h"
 
 #define TextMsg @"0"
 #define ImageMsg @"1"
@@ -34,14 +35,20 @@
 @property (nonatomic,strong) NSMutableArray * messages;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *inputViewBottomCons;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *featureViewHeight;
-@property (weak, nonatomic) IBOutlet UIView *operateView;
-@property (weak, nonatomic) IBOutlet UIView *featureView;
+
+@property (weak, nonatomic) IBOutlet UIView *operateView;//上面摆放的是输入框、表情等
+@property (weak, nonatomic) IBOutlet UIView *featureView;//上面摆放的是拍照、图片、历史消息等
+
 @property (nonatomic,assign) NSInteger flag;
 @property (nonatomic,copy) NSString *imgName;
 @property (nonatomic,strong) UIImage *img;
-@property (nonatomic,strong) UIViewController *previewController;
+@property (nonatomic,strong) UIViewController *previewController;//预览图片的controller
+@property (nonatomic,strong) UIView *emotionListView;
+@property (nonatomic,strong) UIView *featureSubView;
+
 
 - (IBAction)clickFeature;
+- (IBAction)clickEmotion;
 
 @end
 
@@ -80,10 +87,19 @@ singleton_implementation(XHMessageListController)
     //增加各种功能的图标、事件等
     [self loadFeatures];
     
+    //表情
+    [self loadEmotionList];
+    
     // 监听键盘的弹出事件 创建一个NSNotificationCenter对象。
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     // 监听键盘的弹出通知
     [center addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    
+    [center addObserver:self selector:@selector(chooseEmotion:) name:@"chooseEmotionNotification" object:nil];
+}
+
+-(void)chooseEmotion:(NSNotification *)notinfo{
+
 }
 
 /**
@@ -340,7 +356,8 @@ singleton_implementation(XHMessageListController)
     CGFloat marginHor = (self.view.frame.size.width - subWith*4)/5;
     CGFloat marginVer = 10;
     
-    //    UIView *featureView = [[UIView alloc]init];
+    UIView *featureSubView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];//2
+    featureSubView.backgroundColor = [UIColor whiteColor];
     for (int i =0; i<featureIcons.count; i++) {
         UIButton *featureIcon = [[UIButton alloc]init];
         featureIcon.tag = i;
@@ -351,9 +368,20 @@ singleton_implementation(XHMessageListController)
         [featureIcon setTitleEdgeInsets:UIEdgeInsetsMake(65, 0, 0, 0)];
         [featureIcon setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 16, 0)];
         featureIcon.frame = CGRectMake((i%4+1)*marginHor+i%4*subWith, (i/4+1)*marginVer+i/4*80, subWith, subHight);
-        
-        [self.featureView addSubview:featureIcon];
+        [featureSubView addSubview:featureIcon];
     }
+    [self.featureView addSubview:featureSubView];//2
+    self.featureSubView = featureSubView;
+}
+
+/**
+ *  加入表情页
+ */
+-(void)loadEmotionList{
+    XHEmotionListView *emotionListView = [[XHEmotionListView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
+    emotionListView.backgroundColor= [UIColor whiteColor];
+    [self.featureView addSubview:emotionListView];
+    self.emotionListView = emotionListView;
 }
 
 -(void)featureAction:(UIButton *)sender{
@@ -423,6 +451,7 @@ singleton_implementation(XHMessageListController)
     [self.previewController.view addSubview:imgView];
     [picker pushViewController:self.previewController animated:YES];
     
+    
 }
 
 
@@ -430,10 +459,24 @@ singleton_implementation(XHMessageListController)
 - (IBAction)clickFeature {
     [self.view endEditing:YES];
     if (self.featureViewHeight.constant == 200) {
-        self.featureViewHeight.constant = 0;
+//        self.featureViewHeight.constant = 0;
+        
     }else{
         self.featureViewHeight.constant = 200;
     }
+    [self.featureView bringSubviewToFront:self.featureSubView];
+     XHLog(@" bring featureSubView to front ");
+}
+
+- (IBAction)clickEmotion {
+    [self.view endEditing:YES];
+    if (self.featureViewHeight.constant == 200) {
+//        self.featureViewHeight.constant = 0;
+    }else{
+        self.featureViewHeight.constant = 200;
+    }
+    [self.featureView bringSubviewToFront:self.emotionListView];
+    XHLog(@" bring emotionListView to front ");
 }
 
 // ******** 注意: 监听通知以后一定要在监听通知的对象的dealloc方法中移除监听 **********/.

@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>C5D1ED34-5E28-4239-9172-B556D4D45125</string>
 	<key>IDESourceControlProjectName</key>
-	<string>IMForIOS</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>089A96D21DFBE3C771965AE112156284BE132999</key>
 		<string>https://github.com/Xxiaohao/IMForIOS.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>IMForIOS.xcodeproj</string>
+	<string>IMForIOS.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>089A96D21DFBE3C771965AE112156284BE132999</key>

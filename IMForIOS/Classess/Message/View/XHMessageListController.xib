@@ -57,6 +57,9 @@
                             </state>
                             <state key="selected" image="chat_bottom_smile_press"/>
                             <state key="highlighted" image="chat_bottom_smile_press"/>
+                            <connections>
+                                <action selector="clickEmotion" destination="-1" eventType="touchUpInside" id="KfI-Es-wI4"/>
+                            </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SR7-QK-ene" userLabel="other_features">
                             <rect key="frame" x="282" y="9" width="34" height="30"/>

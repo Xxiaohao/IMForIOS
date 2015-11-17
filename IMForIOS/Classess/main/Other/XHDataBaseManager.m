@@ -87,7 +87,7 @@ singleton_implementation(XHDataBaseManager)
         while ([rs next]) {
             NSDictionary *dict = [rs resultDictionary];
             [historyMsgsArray addObject:dict];
-            XHLog(@"--------------------------------msgs dict is %@",dict);
+//            XHLog(@"--------------------------------msgs dict is %@",dict);
         }
         [rs close];
     }

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B1A04101BF9AF2100AC12F7 /* XHEmotionPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1A040F1BF9AF2100AC12F7 /* XHEmotionPageView.m */; };
+		4B1A04131BF9B36700AC12F7 /* XHEmotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1A04121BF9B36700AC12F7 /* XHEmotion.m */; };
+		4B1A04161BF9BC9D00AC12F7 /* XHEmotionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1A04151BF9BC9D00AC12F7 /* XHEmotionButton.m */; };
+		4B1A04191BF9C1AB00AC12F7 /* XHEmotionListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1A04181BF9C1AB00AC12F7 /* XHEmotionListView.m */; };
 		4B2C772F1BE06E5E000968E7 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B2C772E1BE06E5E000968E7 /* libsqlite3.dylib */; };
 		4B2C77321BE06FE5000968E7 /* XHDataBaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C77311BE06FE5000968E7 /* XHDataBaseManager.m */; };
 		4B600E571BE9E2D80015CFD9 /* YXLDetail.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B600E561BE9E2D80015CFD9 /* YXLDetail.m */; };
@@ -119,6 +123,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4B1A040E1BF9AF2100AC12F7 /* XHEmotionPageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHEmotionPageView.h; sourceTree = "<group>"; };
+		4B1A040F1BF9AF2100AC12F7 /* XHEmotionPageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHEmotionPageView.m; sourceTree = "<group>"; };
+		4B1A04111BF9B36700AC12F7 /* XHEmotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHEmotion.h; sourceTree = "<group>"; };
+		4B1A04121BF9B36700AC12F7 /* XHEmotion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHEmotion.m; sourceTree = "<group>"; };
+		4B1A04141BF9BC9D00AC12F7 /* XHEmotionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHEmotionButton.h; sourceTree = "<group>"; };
+		4B1A04151BF9BC9D00AC12F7 /* XHEmotionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHEmotionButton.m; sourceTree = "<group>"; };
+		4B1A04171BF9C1AB00AC12F7 /* XHEmotionListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHEmotionListView.h; sourceTree = "<group>"; };
+		4B1A04181BF9C1AB00AC12F7 /* XHEmotionListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHEmotionListView.m; sourceTree = "<group>"; };
 		4B2C772E1BE06E5E000968E7 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		4B2C77301BE06FE5000968E7 /* XHDataBaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHDataBaseManager.h; sourceTree = "<group>"; };
 		4B2C77311BE06FE5000968E7 /* XHDataBaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHDataBaseManager.m; sourceTree = "<group>"; };
@@ -180,8 +192,8 @@
 		4BEED2DE1BBA7D6700F3A64D /* XHContactTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = XHContactTableViewCell.xib; sourceTree = "<group>"; };
 		4BEED2E61BBA7D6700F3A64D /* UIBarButtonItem+Extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBarButtonItem+Extension.h"; sourceTree = "<group>"; };
 		4BEED2E71BBA7D6700F3A64D /* UIBarButtonItem+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBarButtonItem+Extension.m"; sourceTree = "<group>"; };
-		4BEED2EE1BBA7D6700F3A64D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		4BEED2EF1BBA7D6700F3A64D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		4BEED2EE1BBA7D6700F3A64D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ../main.m; sourceTree = "<group>"; };
+		4BEED2EF1BBA7D6700F3A64D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = ../Main.storyboard; sourceTree = "<group>"; };
 		4BEED3031BBA7D6700F3A64D /* XHMyselfViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XHMyselfViewController.h; sourceTree = "<group>"; };
 		4BEED3041BBA7D6700F3A64D /* XHMyselfViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHMyselfViewController.m; sourceTree = "<group>"; };
 		4BEED31C1BBA7EE900F3A64D /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
@@ -491,8 +503,6 @@
 				4BEED3251BBA7EF300F3A64D /* Other */,
 				4BEED31B1BBA7EE900F3A64D /* Controller */,
 				4BEED2E51BBA7D6700F3A64D /* Category */,
-				4BEED2EE1BBA7D6700F3A64D /* main.m */,
-				4BEED2EF1BBA7D6700F3A64D /* Main.storyboard */,
 				4BEED2F01BBA7D6700F3A64D /* Model */,
 				4BEED2F21BBA7D6700F3A64D /* View */,
 			);
@@ -520,6 +530,7 @@
 		4BEED2F21BBA7D6700F3A64D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				4BEED2EF1BBA7D6700F3A64D /* Main.storyboard */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -554,6 +565,10 @@
 				4BE7AF051BCBB07200A1E410 /* XHMessageFrame.m */,
 				4BE7AEFB1BCBA01100A1E410 /* XHChatBean.h */,
 				4BE7AEFC1BCBA01100A1E410 /* XHChatBean.m */,
+				4B1A04111BF9B36700AC12F7 /* XHEmotion.h */,
+				4B1A04121BF9B36700AC12F7 /* XHEmotion.m */,
+				4B1A04141BF9BC9D00AC12F7 /* XHEmotionButton.h */,
+				4B1A04151BF9BC9D00AC12F7 /* XHEmotionButton.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -570,6 +585,10 @@
 				4B600EBB1BEC3B560015CFD9 /* XHFeature.xib */,
 				4B600EBD1BEC44230015CFD9 /* XHFeature.h */,
 				4B600EBE1BEC44230015CFD9 /* XHFeature.m */,
+				4B1A040E1BF9AF2100AC12F7 /* XHEmotionPageView.h */,
+				4B1A040F1BF9AF2100AC12F7 /* XHEmotionPageView.m */,
+				4B1A04171BF9C1AB00AC12F7 /* XHEmotionListView.h */,
+				4B1A04181BF9C1AB00AC12F7 /* XHEmotionListView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -623,6 +642,7 @@
 		4BEED3251BBA7EF300F3A64D /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				4BEED2EE1BBA7D6700F3A64D /* main.m */,
 				4BB47F341BCF3DE7009EB765 /* AppDelegate.h */,
 				4BB47F351BCF3DE7009EB765 /* AppDelegate.m */,
 				4BEED3261BBA7EF300F3A64D /* XHAsyncSocketClient.h */,
@@ -1024,10 +1044,12 @@
 				4BEFA9E21BF16FDF00C71D36 /* TYImageStorage.m in Sources */,
 				4BB215E91BD7669100040907 /* XHUserInfo.m in Sources */,
 				4BEFA9C91BF16FDF00C71D36 /* NSObject+MJProperty.m in Sources */,
+				4B1A04191BF9C1AB00AC12F7 /* XHEmotionListView.m in Sources */,
 				4BE7AF001BCBAEF200A1E410 /* XHMessageViewController.m in Sources */,
 				4BEFA9DA1BF16FDF00C71D36 /* MJRefreshConst.m in Sources */,
 				4BEED3221BBA7EE900F3A64D /* ViewController.m in Sources */,
 				4BEFA9C31BF16FDF00C71D36 /* MJProperty.m in Sources */,
+				4B1A04101BF9AF2100AC12F7 /* XHEmotionPageView.m in Sources */,
 				4BEFA9E41BF16FDF00C71D36 /* TYTextContainer+Extended.m in Sources */,
 				4BEFA9DF1BF16FDF00C71D36 /* TYAttributedLabel.m in Sources */,
 				4BE7AEF71BCB888C00A1E410 /* XHGroupModel.m in Sources */,
@@ -1068,9 +1090,11 @@
 				4BEFA9B61BF16FDF00C71D36 /* MASConstraintMaker.m in Sources */,
 				4B600E571BE9E2D80015CFD9 /* YXLDetail.m in Sources */,
 				4BEFA9C71BF16FDF00C71D36 /* NSObject+MJCoding.m in Sources */,
+				4B1A04131BF9B36700AC12F7 /* XHEmotion.m in Sources */,
 				4BEFA9E71BF16FDF00C71D36 /* TYViewStorage.m in Sources */,
 				4BEFA9D71BF16FDF00C71D36 /* MJRefreshNormalHeader.m in Sources */,
 				4BEFA9B21BF16FDF00C71D36 /* FMDatabaseQueue.m in Sources */,
+				4B1A04161BF9BC9D00AC12F7 /* XHEmotionButton.m in Sources */,
 				4BEED3071BBA7D6700F3A64D /* XHContactViewController.m in Sources */,
 				4BEFA9E51BF16FDF00C71D36 /* TYTextContainer.m in Sources */,
 				4B600EBF1BEC44230015CFD9 /* XHFeature.m in Sources */,
@@ -1188,6 +1212,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1201,6 +1226,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
